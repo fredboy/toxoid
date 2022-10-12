@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ru.fredboy.toxoid">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+
+    <application
+        android:name=".ToxoidApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Toxoid">
+        <activity
+            android:name=".clean.presentation.activity.MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.Toxoid.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".clean.presentation.activity.WelcomeActivity"
+            android:exported="false"
+            android:label="@string/welcome">
+        </activity>
+
+        <service android:name=".tox.ToxService"
+            android:label="@string/tox_service_label"
+            android:foregroundServiceType="dataSync" />
+
+    </application>
+
+</manifest>

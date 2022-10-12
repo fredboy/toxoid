@@ -1,0 +1,150 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+    id 'androidx.navigation.safeargs.kotlin'
+    id 'kotlinx-serialization'
+}
+
+android {
+    compileSdk setup.compileSdk
+
+    defaultConfig {
+        applicationId "ru.fredboy.toxoid"
+        minSdk setup.minSdk
+        targetSdk setup.targetSdk
+        versionCode setup.versionCode
+        versionName setup.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix ".debug"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        viewBinding true
+    }
+    packagingOptions {
+        exclude "rootdoc.txt"
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
+    kapt {
+        generateStubs = true
+    }
+}
+
+configurations {
+    needFixing
+}
+
+tasks.register("fixPaths") {
+    configurations.needFixing.asFileTree.forEach { jar ->
+        String arch
+        if (jar.name.contains("aarch64")) {
+            arch = "arm64-v8a"
+        } else if (jar.name.contains("arm")) {
+            arch = "armeabi-v7a"
+        } else if (jar.name.contains("i686")) {
+            arch = "x86"
+        } else if (jar.name.contains("x86_64")) {
+            arch = "x86_64"
+        } else {
+            throw GradleException("Unknown arch")
+        }
+
+        new File("src/main/jniLibs/$arch").mkdirs()
+        copy {
+            from(zipTree(jar).files)
+            into("src/main/jniLibs/$arch")
+            include("*.so")
+        }
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn fixPaths
+}
+
+dependencies {
+    implementation "androidx.core:core-ktx:${versions.ktx}"
+    implementation "androidx.appcompat:appcompat:${versions.appcompat}"
+    implementation "com.google.android.material:material:${versions.material}"
+    implementation "androidx.recyclerview:recyclerview:${versions.recyclerView}"
+    implementation "androidx.annotation:annotation:${versions.annotation}"
+    implementation "androidx.constraintlayout:constraintlayout:${versions.constraintLayout}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serialization}"
+
+
+    // navigation
+    implementation "androidx.navigation:navigation-runtime-ktx:${versions.navigation}"
+    implementation "androidx.navigation:navigation-fragment-ktx:${versions.navigation}"
+    implementation "androidx.navigation:navigation-ui-ktx:${versions.navigation}"
+
+    // materialdrawer
+    implementation "com.mikepenz:materialdrawer:${versions.materialDrawer}"
+
+    // fastadapter
+    implementation "com.mikepenz:fastadapter:${versions.fastadapter}"
+    implementation "com.mikepenz:fastadapter-extensions-binding:${versions.fastadapter}"
+    implementation "com.mikepenz:fastadapter-extensions-diff:${versions.fastadapter}"
+
+    // circleimage
+    implementation "de.hdodenhof:circleimageview:${versions.circleimage}"
+
+    // room
+    implementation "androidx.room:room-runtime:${versions.room}"
+    implementation "androidx.room:room-ktx:${versions.room}"
+    kapt "androidx.room:room-compiler:${versions.room}"
+
+    // moxy
+    implementation "com.github.moxy-community:moxy-androidx:${versions.moxy}"
+    implementation "com.github.moxy-community:moxy-material:${versions.moxy}"
+    implementation "com.github.moxy-community:moxy:${versions.moxy}"
+    implementation "com.github.moxy-community:moxy-ktx:${versions.moxy}"
+    kapt "com.github.moxy-community:moxy-compiler:${versions.moxy}"
+
+    // hilt
+    implementation "com.google.dagger:hilt-android:${versions.hilt}"
+    kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"
+
+    // rxjava
+/*    implementation "io.reactivex.rxjava3:rxjava:${versions.rxjava}"
+    implementation "io.reactivex.rxjava3:rxandroid:${versions.rxandroid}"*/
+
+    // tox
+    needFixing "org.toktok:tox4j-c_aarch64-linux-android:0.2.13"
+    needFixing "org.toktok:tox4j-c_armv7a-linux-androideabi:0.2.13"
+    needFixing "org.toktok:tox4j-c_x86_64-linux-android:0.2.13"
+    needFixing "org.toktok:tox4j-c_i686-linux-android:0.2.13"
+    implementation "org.toktok:tox4j-c_2.11:0.2.3"
+    api "org.toktok:tox4j-api_2.11:0.2.3"
+
+    // wtf
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation "androidx.navigation:navigation-testing:${versions.navigation}"
+
+}

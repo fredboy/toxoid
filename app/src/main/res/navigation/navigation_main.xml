@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_main"
+    app:startDestination="@id/ChatListFragment">
+
+    <fragment
+        android:id="@+id/ChatListFragment"
+        android:name="ru.fredboy.toxoid.clean.presentation.view.chatlist.ChatListFragment"
+        android:label="@string/chat_list_fragment_label"
+        tools:layout="@layout/fragment_chat_list">
+        <action
+            android:id="@+id/action_ChatListFragment_to_ChatFragment"
+            app:destination="@id/ChatFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/ChatFragment"
+        android:name="ru.fredboy.toxoid.clean.presentation.view.chat.ChatFragment"
+        android:label="@string/chat_fragment_label"
+        tools:layout="@layout/fragment_chat">
+
+        <argument
+            android:name="chatId"
+            app:argType="string" />
+
+        <argument
+            android:name="localUserId"
+            app:argType="string" />
+
+    </fragment>
+</navigation>

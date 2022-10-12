@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Toxoid</string>
+    <string name="title_activity_main">MainActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="chat_list_fragment_label">Chats</string>
+    <string name="peer_picture_content_description">User image</string>
+    <string name="chat_fragment_label">Messages</string>
+    <string name="message_edit_hint">Write your message...</string>
+    <string name="send">Send</string>
+    <string name="continue_text">Continue</string>
+    <string name="welcome">Welcome</string>
+    <string name="hello">Hello!</string>
+    <string name="tox_service_label">Tox Connection</string>
+    <string name="foreground_service_notification_channel_id">toxoid_foreground_service_channel</string>
+    <string name="foreground_service_notification_channel_name">Tox Service</string>
+    <string name="foreground_service_notification_channel_description">Tox background connection</string>
+    <string name="toxoid_is_running">Toxoid service is running</string>
+    <string name="foreground_service_notification_ticker">TXID</string>
+    <string name="create_new_profile">Create new profile</string>
+    <string name="user_name">User name</string>
+    <string name="user_new_password">New password</string>
+    <string name="your_new_toxid">Your new ToxID:</string>
+    <string name="choose_bootstrap_nodes">Choose bootstrap nodes</string>
+</resources>

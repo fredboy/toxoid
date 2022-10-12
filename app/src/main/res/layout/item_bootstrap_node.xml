@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/bootstrapNodeCountry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        tools:text="🇷🇺"
+        tools:ignore="SpUsage" />
+
+    <ImageView
+        android:id="@+id/bootstrapNodeOnlineStatus"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        tools:src="@drawable/ic_bootstrap_node_online"
+        app:layout_constraintTop_toBottomOf="@id/bootstrapNodeCountry"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="8dp"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/bootstrapNodeIpv4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bootstrapNodeCountry"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        tools:text="222.222.222.222"/>
+
+    <TextView
+        android:id="@+id/bootstrapNodeIpv6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/bootstrapNodeOnlineStatus"
+        app:layout_constraintStart_toEndOf="@id/bootstrapNodeCountry"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        tools:text="2a04:ac00:1:9f00:5054:ff:fe01:becd"/>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/bootstrapNodeSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="10dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
