@@ -32,7 +32,7 @@ class WelcomeFragment : BaseMvpFragment(), WelcomeView {
 
         with(binding) {
             welcomeContinueButton.setOnClickListener {
-                presenter.onContinueClick()
+//                presenter.onContinueClick()
                 navigateNewUser()
             }
         }
@@ -45,7 +45,7 @@ class WelcomeFragment : BaseMvpFragment(), WelcomeView {
     }
 
     private fun navigateNewUser() {
-        val action = WelcomeFragmentDirections.actionWelcomeFragmentToNewUserFragment()
+        val action = WelcomeFragmentDirections.actionWelcomeFragmentToBootstrapFragment()
         findNavController().navigate(action)
     }
 

@@ -53,11 +53,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeMockDataIfNeed() {
-        if (initializeWithMockDataUseCase.isFirstLaunch()) {
+//        if (initializeWithMockDataUseCase.isFirstLaunch()) {
             val welcomeIntent = Intent(applicationContext, WelcomeActivity::class.java)
             startActivity(welcomeIntent)
-            initializeWithMockDataUseCase.setFirstLaunch()
+//            initializeWithMockDataUseCase.setFirstLaunch()
             finish()
-        }
+//        }
     }
 }

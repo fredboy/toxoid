@@ -92,7 +92,7 @@ dependencies {
     implementation "androidx.annotation:annotation:${versions.annotation}"
     implementation "androidx.constraintlayout:constraintlayout:${versions.constraintLayout}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serialization}"
+//    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serialization}"
 
 
     // navigation
@@ -126,6 +126,13 @@ dependencies {
     // hilt
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"
+
+    // retrofit
+    implementation "com.squareup.retrofit2:retrofit:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:converter-gson:${versions.retrofit}"
+
+    // gson
+    implementation "com.google.code.gson:gson:${versions.gson}"
 
     // rxjava
 /*    implementation "io.reactivex.rxjava3:rxjava:${versions.rxjava}"

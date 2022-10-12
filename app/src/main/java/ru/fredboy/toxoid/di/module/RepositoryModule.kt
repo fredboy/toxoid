@@ -8,6 +8,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import ru.fredboy.toxoid.clean.data.source.bootstrap.RetrofitToxChatNodesDataSource
+import ru.fredboy.toxoid.clean.data.source.bootstrap.ToxChatNodesDataSource
 import ru.fredboy.toxoid.clean.data.source.chat.ChatDataSource
 import ru.fredboy.toxoid.clean.data.source.chat.RoomChatDataSource
 import ru.fredboy.toxoid.clean.data.source.contact.ContactDataSource
@@ -56,6 +58,11 @@ abstract class RepositoryBindingsModule {
     abstract fun bindCachedFriendRequestDataSource(
         implementation: RoomCachedFriendRequestDataSource
     ) : CachedFriendRequestDataSource
+
+    @Binds
+    abstract fun bindToxChatNodesDataSource(
+        implementation: RetrofitToxChatNodesDataSource
+    ) : ToxChatNodesDataSource
 
 }
 
