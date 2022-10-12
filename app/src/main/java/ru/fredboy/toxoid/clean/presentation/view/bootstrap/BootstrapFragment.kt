@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import moxy.ktx.moxyPresenter
-import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
+import ru.fredboy.toxoid.clean.presentation.model.BootstrapNodeVo
 import ru.fredboy.toxoid.clean.presentation.view.base.BaseMvpFragment
 import ru.fredboy.toxoid.databinding.FragmentBootstrapBinding
 import ru.fredboy.toxoid.utils.gone
@@ -39,13 +40,22 @@ class BootstrapFragment : BaseMvpFragment(), BootstrapView {
         with(binding) {
             bootstrapProgress.visible()
             bootstrapNodesRecycler.adapter = fastAdapter
+
+            bootstrapContinue.setOnClickListener {
+                findNavController().navigate(
+                    BootstrapFragmentDirections.actionBootstrapFragmentToNewUserFragment())
+            }
         }
 
         return binding.root
     }
 
-    override fun setNodes(nodes: List<BootstrapNode>) {
-        itemAdapter.add(nodes.map(::BootstrapNodeItem))
+    override fun setNodes(nodes: List<BootstrapNodeVo>) {
+        itemAdapter.add(nodes.mapIndexed { index, node ->
+            BootstrapNodeItem(node) { selected ->
+                presenter.onNodeSwitched(index, selected)
+            }
+        })
         binding.bootstrapProgress.gone()
     }
 

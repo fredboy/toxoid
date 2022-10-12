@@ -13,7 +13,8 @@ import javax.inject.Singleton
         MessageEntity::class,
         ContactEntity::class,
         LocalUserEntity::class,
-        FriendRequestEntity::class
+        FriendRequestEntity::class,
+        BootstrapNodeEntity::class,
     ],
     version = MainDatabase.VERSION
 )
@@ -24,12 +25,14 @@ abstract class MainDatabase : RoomDatabase() {
     abstract fun chatDao(): ChatDao
     abstract fun localUserDao(): LocalUserDao
     abstract fun friendRequestDao(): FriendRequestDao
+    abstract fun bootstrapNodeDao(): BootstrapNodeDao
 
     val contactDao get() = contactDao()
     val messageDao get() = messageDao()
     val chatDao get() = chatDao()
     val localUserDao get() = localUserDao()
     val friendRequestDao get() = friendRequestDao()
+    val bootstrapNodeDao get() = bootstrapNodeDao()
 
     companion object {
         const val VERSION = 1
@@ -40,5 +43,6 @@ abstract class MainDatabase : RoomDatabase() {
         const val MESSAGE_TABLE = "message"
         const val LOCAL_USER_TABLE = "local_user"
         const val FRIEND_REQUEST_TABLE = "friend_request"
+        const val BOOTSTRAP_NODES_TABLE = "bootstrap_nodes"
     }
 }

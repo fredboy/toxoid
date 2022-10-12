@@ -27,13 +27,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        initializeMockDataIfNeed()
-
-        val toxServiceIntent = Intent(applicationContext, ToxService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(toxServiceIntent)
+        if (initializeWithMockDataUseCase.isFirstLaunch()) {
+            val welcomeIntent = Intent(applicationContext, WelcomeActivity::class.java)
+            startActivity(welcomeIntent)
+            initializeWithMockDataUseCase.setFirstLaunch()
+            finish()
         } else {
-            startService(toxServiceIntent)
+            val toxServiceIntent = Intent(applicationContext, ToxService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(toxServiceIntent)
+            } else {
+                startService(toxServiceIntent)
+            }
         }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -50,14 +55,5 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
-    }
-
-    private fun initializeMockDataIfNeed() {
-//        if (initializeWithMockDataUseCase.isFirstLaunch()) {
-            val welcomeIntent = Intent(applicationContext, WelcomeActivity::class.java)
-            startActivity(welcomeIntent)
-//            initializeWithMockDataUseCase.setFirstLaunch()
-            finish()
-//        }
     }
 }

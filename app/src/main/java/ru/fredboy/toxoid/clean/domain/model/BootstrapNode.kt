@@ -1,8 +1,12 @@
 package ru.fredboy.toxoid.clean.domain.model
 
+import im.tox.tox4j.core.data.ToxPublicKey
+
 data class BootstrapNode(
-    val ipv4: String,
-    val ipv6: String?,
+    val publicKey: ToxPublicKey,
+    val host: String,
+    val port: Int,
     val location: String,
-    val status: Boolean
+    val status: Boolean? = null,
+    val motd: String? = null
 )

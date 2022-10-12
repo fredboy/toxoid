@@ -1,17 +1,40 @@
 package ru.fredboy.toxoid.clean.data.mapper
 
 import ru.fredboy.toxoid.clean.data.model.json.BootstrapNodeDto
+import ru.fredboy.toxoid.clean.data.model.room.BootstrapNodeEntity
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
 import javax.inject.Inject
 
-class BootstrapNodeMapper @Inject constructor() {
+class BootstrapNodeMapper @Inject constructor(
+    private val toxPublicKeyMapper: ToxPublicKeyMapper,
+) {
 
-    fun map(dto: BootstrapNodeDto): BootstrapNode? {
+    fun map(dto: BootstrapNodeDto): BootstrapNode {
         return BootstrapNode(
-            ipv4 = dto.ipv4 ?: return null,
-            ipv6 = dto.ipv6,
-            location = dto.location ?: return null,
-            status = dto.statusTcp ?: return null,
+            publicKey = toxPublicKeyMapper.map(requireNotNull(dto.publicKey)),
+            host = requireNotNull(dto.ipv4),
+            port = requireNotNull(dto.port),
+            location = requireNotNull(dto.location),
+            status = dto.statusTcp,
+            motd = dto.motd
+        )
+    }
+
+    fun map(entity: BootstrapNodeEntity): BootstrapNode {
+        return BootstrapNode(
+            publicKey = toxPublicKeyMapper.map(entity.id),
+            host = entity.host,
+            port = entity.port,
+            location = entity.location,
+        )
+    }
+
+    fun map(node: BootstrapNode): BootstrapNodeEntity {
+        return BootstrapNodeEntity(
+            id = toxPublicKeyMapper.map(node.publicKey),
+            host = node.host,
+            port = node.port,
+            location = node.location,
         )
     }
 

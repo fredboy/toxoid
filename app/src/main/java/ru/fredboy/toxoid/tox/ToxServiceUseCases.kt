@@ -5,6 +5,7 @@ import im.tox.tox4j.core.enums.ToxConnection
 import im.tox.tox4j.core.options.ToxOptions
 import kotlinx.coroutines.flow.Flow
 import ru.fredboy.toxoid.clean.data.model.FriendRequestData
+import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
 import ru.fredboy.toxoid.clean.domain.usecase.*
 import ru.fredboy.toxoid.utils.ToxId
 import javax.inject.Inject
@@ -14,7 +15,8 @@ class ToxServiceUseCases @Inject constructor(
     private val broadcastNewFriendRequestUseCase: BroadcastNewFriendRequestUseCase,
     private val setOwnToxIdUseCase: SetOwnToxIdUseCase,
     private val streamSelfConnectionStatusUseCase: StreamSelfConnectionStatusUseCase,
-    private val getSelfConnectionStatusFlowUseCase: GetSelfConnectionStatusFlowUseCase
+    private val getSelfConnectionStatusFlowUseCase: GetSelfConnectionStatusFlowUseCase,
+    private val getSavedBootstrapNodesUseCase: GetSavedBootstrapNodesUseCase,
 ) {
 
     @WorkerThread
@@ -36,6 +38,10 @@ class ToxServiceUseCases @Inject constructor(
 
     fun getSelfConnectionStatusFlow(): Flow<ToxConnection> {
         return getSelfConnectionStatusFlowUseCase.execute()
+    }
+
+    suspend fun getSavedBootstrapNodes(): List<BootstrapNode> {
+        return getSavedBootstrapNodesUseCase.execute()
     }
 
 }

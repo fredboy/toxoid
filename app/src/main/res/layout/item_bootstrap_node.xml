@@ -29,7 +29,7 @@
         tools:ignore="ContentDescription" />
 
     <TextView
-        android:id="@+id/bootstrapNodeIpv4"
+        android:id="@+id/bootstrapNodeSocket"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -39,14 +39,16 @@
         tools:text="222.222.222.222"/>
 
     <TextView
-        android:id="@+id/bootstrapNodeIpv6"
+        android:id="@+id/bootstrapNodeMotd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="@id/bootstrapNodeOnlineStatus"
         app:layout_constraintStart_toEndOf="@id/bootstrapNodeCountry"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"
-        tools:text="2a04:ac00:1:9f00:5054:ff:fe01:becd"/>
+        android:gravity="start"
+        android:maxWidth="320dp"
+        android:maxLines="2"
+        tools:text="Hello world" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/bootstrapNodeSwitch"

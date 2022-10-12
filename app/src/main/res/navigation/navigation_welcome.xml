@@ -12,10 +12,6 @@
         <action
             android:id="@+id/action_WelcomeFragment_to_BootstrapFragment"
             app:destination="@id/BootstrapFragment" />
-
-        <action
-            android:id="@+id/action_WelcomeFragment_to_NewUserFragment"
-            app:destination="@id/NewUserFragment" />
     </fragment>
 
     <fragment
@@ -27,6 +23,10 @@
     <fragment
         android:id="@+id/BootstrapFragment"
         android:name="ru.fredboy.toxoid.clean.presentation.view.bootstrap.BootstrapFragment"
-        android:label="BootstrapFragment" />
+        android:label="BootstrapFragment">
+        <action
+            android:id="@+id/action_BootstrapFragment_to_NewUserFragment"
+            app:destination="@id/NewUserFragment" />
+    </fragment>
 
 </navigation>

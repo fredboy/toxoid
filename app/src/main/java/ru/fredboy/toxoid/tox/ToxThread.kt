@@ -37,13 +37,16 @@ class ToxThread @Inject constructor(
         useCases.setOwnToxId(toxCore.address)
         Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.address)}")
 
-        toxCore.bootstrap(
-            "95.79.50.56",
-            33445,
-            im.tox.tox4j.core.data.ToxPublicKey.unsafeFromValue(
-                hexStringToByteArray("8E7D0B859922EF569298B4D261A8CCB5FEA14FB91ED412A7603A585A25698832")
+        runBlocking {
+            val bootstrapNodes = useCases.getSavedBootstrapNodes()
+            val bootstrapNode = bootstrapNodes.first()
+
+            toxCore.bootstrap(
+                bootstrapNode.host,
+                bootstrapNode.port,
+                bootstrapNode.publicKey.value()
             )
-        )
+        }
 
         CoroutineScope(Dispatchers.Main).launch {
             useCases.getSelfConnectionStatusFlow()

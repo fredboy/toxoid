@@ -4,21 +4,21 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import ru.fredboy.toxoid.R
-import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
+import ru.fredboy.toxoid.clean.presentation.model.BootstrapNodeVo
 import ru.fredboy.toxoid.databinding.ItemBootstrapNodeBinding
-import ru.fredboy.toxoid.utils.countryCodeToEmojiFlag
 
 class BootstrapNodeItem(
-    private val model: BootstrapNode
+    private val model: BootstrapNodeVo,
+    private val onSwitched: (Boolean) -> Unit,
 ) : AbstractBindingItem<ItemBootstrapNodeBinding>() {
 
     override val type = R.id.item_bootstrap_node
 
     override fun bindView(binding: ItemBootstrapNodeBinding, payloads: List<Any>) {
         with(binding) {
-            bootstrapNodeCountry.text = countryCodeToEmojiFlag(model.location)
-            bootstrapNodeIpv4.text = model.ipv4
-            bootstrapNodeIpv6.text = model.ipv6
+            bootstrapNodeCountry.text = model.flag
+            bootstrapNodeSocket.text = model.socket
+            bootstrapNodeMotd.text = model.motd
 
             bootstrapNodeOnlineStatus.setImageResource(
                 if (model.status)
@@ -26,6 +26,10 @@ class BootstrapNodeItem(
                 else
                     R.drawable.ic_bootstrap_node_offline
             )
+
+            bootstrapNodeSwitch.setOnClickListener {
+                onSwitched(bootstrapNodeSwitch.isChecked)
+            }
         }
     }
 
