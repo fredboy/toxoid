@@ -9,7 +9,7 @@ class WelcomePresenter @Inject constructor(
 ) : BaseMvpPresenter<WelcomeView>() {
 
     fun onContinueClick() {
-        initializeWithMockDataUseCase.execute()
+//        initializeWithMockDataUseCase.execute()
     }
 
 }

@@ -1,51 +1,50 @@
 package ru.fredboy.toxoid.clean.data.source.tox
 
 import android.content.Context
-import androidx.annotation.WorkerThread
 import dagger.hilt.android.qualifiers.ApplicationContext
 import im.tox.tox4j.core.ToxCoreConstants
-import im.tox.tox4j.core.enums.ToxProxyType
-import im.tox.tox4j.core.enums.ToxSavedataType
 import im.tox.tox4j.core.options.ProxyOptions
 import im.tox.tox4j.core.options.SaveDataOptions
 import im.tox.tox4j.core.options.ToxOptions
 import java.io.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Suppress("BlockingMethodInNonBlockingContext")
+@Singleton
 class MockToxOptionsDataSource @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ToxOptionsDataSource {
 
-    @WorkerThread
-    override fun createNew(): ToxOptions {
+    override suspend fun createNew(): ToxOptions {
         return createOptions(null)
     }
 
-    @WorkerThread
-    override fun getForUser(userId: String): ToxOptions? {
-        return try {
-            val cacheDir = context.cacheDir
-            val file = File("$cacheDir/$userId.dat")
-            val fin = FileInputStream(file)
-            val data = fin.readBytes()
-            fin.close()
-            createOptions(data)
-        } catch (e: FileNotFoundException) {
-            null
-        }
+    override suspend fun getForUser(userId: String): ToxOptions {
+        val cacheDir = context.cacheDir
+        val file = File("$cacheDir/$userId.dat")
+        val fin = FileInputStream(file)
+        val data = fin.readBytes()
+        fin.close()
+        return createOptions(data)
     }
 
-    @WorkerThread
-    override fun saveToxData(toxId: String, data: ByteArray) {
+    override suspend fun saveToxData(toxId: String, data: ByteArray) {
         val cacheDir = context.cacheDir
         val file = File("$cacheDir/$toxId.dat")
-        val fout = ObjectOutputStream(FileOutputStream(file))
+        val fout = FileOutputStream(file)
         fout.write(data)
         fout.flush()
         fout.close()
     }
 
     private fun createOptions(savedData: ByteArray?): ToxOptions {
+        val saveDataOptions = if (savedData == null) {
+            SaveDataOptions.`None$`.`MODULE$`
+        } else {
+            SaveDataOptions.ToxSave(savedData)
+        }
+
         return ToxOptions(
             false,
             true,
@@ -54,7 +53,7 @@ class MockToxOptionsDataSource @Inject constructor(
             ToxCoreConstants.DefaultStartPort(),
             ToxCoreConstants.DefaultEndPort(),
             ToxCoreConstants.DefaultTcpPort(),
-            SaveDataOptions.`None$`.`MODULE$`,
+            saveDataOptions,
             false
         )
     }

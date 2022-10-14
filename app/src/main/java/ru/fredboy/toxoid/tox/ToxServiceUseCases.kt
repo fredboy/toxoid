@@ -1,11 +1,11 @@
 package ru.fredboy.toxoid.tox
 
-import androidx.annotation.WorkerThread
 import im.tox.tox4j.core.enums.ToxConnection
 import im.tox.tox4j.core.options.ToxOptions
 import kotlinx.coroutines.flow.Flow
 import ru.fredboy.toxoid.clean.data.model.FriendRequestData
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
+import ru.fredboy.toxoid.clean.domain.model.LocalUser
 import ru.fredboy.toxoid.clean.domain.usecase.*
 import ru.fredboy.toxoid.utils.ToxId
 import javax.inject.Inject
@@ -17,10 +17,12 @@ class ToxServiceUseCases @Inject constructor(
     private val streamSelfConnectionStatusUseCase: StreamSelfConnectionStatusUseCase,
     private val getSelfConnectionStatusFlowUseCase: GetSelfConnectionStatusFlowUseCase,
     private val getSavedBootstrapNodesUseCase: GetSavedBootstrapNodesUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val loadToxDataUseCase: LoadToxDataUseCase,
+    private val saveToxDataUseCase: SaveToxDataUseCase,
 ) {
 
-    @WorkerThread
-    fun createNewToxOptions(): ToxOptions {
+    suspend fun createNewToxOptions(): ToxOptions {
         return createNewToxOptionsUseCase.execute()
     }
 
@@ -42,6 +44,18 @@ class ToxServiceUseCases @Inject constructor(
 
     suspend fun getSavedBootstrapNodes(): List<BootstrapNode> {
         return getSavedBootstrapNodesUseCase.execute()
+    }
+
+    suspend fun getCurrentUser(): LocalUser? {
+        return getCurrentUserUseCase.execute()
+    }
+
+    suspend fun loadToxData(toxId: String): ToxOptions {
+        return loadToxDataUseCase.execute(toxId)
+    }
+
+    suspend fun saveToxData(toxId: String, data: ByteArray) {
+        saveToxDataUseCase.execute(toxId, data)
     }
 
 }

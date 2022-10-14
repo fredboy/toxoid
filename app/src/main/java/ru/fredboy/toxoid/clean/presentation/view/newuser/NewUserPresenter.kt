@@ -7,6 +7,7 @@ import moxy.presenterScope
 import ru.fredboy.toxoid.clean.domain.model.Identicon
 import ru.fredboy.toxoid.clean.domain.model.LocalUser
 import ru.fredboy.toxoid.clean.presentation.view.base.BaseMvpPresenter
+import ru.fredboy.toxoid.utils.bytesToHexString
 import javax.inject.Inject
 
 class NewUserPresenter @Inject constructor(
@@ -36,11 +37,12 @@ class NewUserPresenter @Inject constructor(
 
         useCases.getOwnToxIdFlow()
             .schedule( { toxId ->
-                val stringId = String(toxId)
+                val stringId = bytesToHexString(toxId)
                 val user = LocalUser(id = stringId, name = name)
                 presenterScope.launch {
                     useCases.addNewUser(user)
                     useCases.setCurrentUserUseCase(stringId)
+                    viewState.setNewUser(user)
                 }
             })
     }

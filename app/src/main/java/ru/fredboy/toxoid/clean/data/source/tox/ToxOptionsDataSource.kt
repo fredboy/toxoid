@@ -1,17 +1,13 @@
 package ru.fredboy.toxoid.clean.data.source.tox
 
-import androidx.annotation.WorkerThread
 import im.tox.tox4j.core.options.ToxOptions
 
 interface ToxOptionsDataSource {
 
-    @WorkerThread
-    fun createNew(): ToxOptions
+    suspend fun createNew(): ToxOptions
 
-    @WorkerThread
-    fun saveToxData(toxId: String, data: ByteArray)
+    suspend fun saveToxData(toxId: String, data: ByteArray)
 
-    @WorkerThread
-    fun getForUser(userId: String): ToxOptions?
+    suspend fun getForUser(userId: String): ToxOptions
 
 }

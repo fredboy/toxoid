@@ -10,7 +10,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import ru.fredboy.toxoid.utils.bytesToHexString
-import ru.fredboy.toxoid.utils.hexStringToByteArray
+import java.io.IOException
 import java.lang.Runnable
 import javax.inject.Inject
 
@@ -31,13 +31,24 @@ class ToxThread @Inject constructor(
     }
 
     override fun run() {
-        val toxOptions = useCases.createNewToxOptions()
-        toxCore = ToxCoreImpl(toxOptions)
-
-        useCases.setOwnToxId(toxCore.address)
-        Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.address)}")
 
         runBlocking {
+            val currentUser = useCases.getCurrentUser()
+
+            val toxOptions = try {
+                currentUser?.id?.let { toxId ->
+                    useCases.loadToxData(toxId)
+                } ?: useCases.createNewToxOptions()
+            } catch (e: IOException) {
+                useCases.createNewToxOptions()
+            }
+
+            toxCore = ToxCoreImpl(toxOptions)
+
+            useCases.setOwnToxId(toxCore.address)
+            Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.address)}")
+
+
             val bootstrapNodes = useCases.getSavedBootstrapNodes()
             val bootstrapNode = bootstrapNodes.first()
 
@@ -46,12 +57,20 @@ class ToxThread @Inject constructor(
                 bootstrapNode.port,
                 bootstrapNode.publicKey.value()
             )
+
+            useCases.saveToxData(bytesToHexString(toxCore.address), toxCore.savedata)
         }
 
         CoroutineScope(Dispatchers.Main).launch {
             useCases.getSelfConnectionStatusFlow()
                 .flowOn(Dispatchers.IO)
-                .collect { Toast.makeText(context, "Connection status: ${it.name}", Toast.LENGTH_SHORT).show()  }
+                .collect {
+                    Toast.makeText(
+                        context,
+                        "Connection status: ${it.name}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
         }
 
         val eventListener = ToxEventListenerImpl(useCases)
@@ -59,6 +78,7 @@ class ToxThread @Inject constructor(
             Thread.sleep(toxCore.iterationInterval().toLong())
             toxCore.iterate(eventListener, Any())
         }
+
         Log.d(TAG, "dead")
     }
 
