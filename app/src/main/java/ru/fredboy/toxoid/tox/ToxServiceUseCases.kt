@@ -20,6 +20,7 @@ class ToxServiceUseCases @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val loadToxDataUseCase: LoadToxDataUseCase,
     private val saveToxDataUseCase: SaveToxDataUseCase,
+    private val getLatestSelfConnectionStatusUseCase: GetLatestSelfConnectionStatusUseCase,
 ) {
 
     suspend fun createNewToxOptions(): ToxOptions {
@@ -56,6 +57,10 @@ class ToxServiceUseCases @Inject constructor(
 
     suspend fun saveToxData(toxId: String, data: ByteArray) {
         saveToxDataUseCase.execute(toxId, data)
+    }
+
+    fun getLatestSelfConnectionStatus(): ToxConnection {
+        return getLatestSelfConnectionStatusUseCase.execute()
     }
 
 }

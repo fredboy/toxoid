@@ -14,6 +14,12 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.zip
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -80,5 +86,32 @@ class ToxService : Service() {
             .build()
 
         startForeground(R.id.foreground_service_notification_id, notification)
+
+        subscribeOnSelfConnectionStatus(notificationManager)
+    }
+
+    private fun subscribeOnSelfConnectionStatus(notificationManager: NotificationManager) {
+        CoroutineScope(Dispatchers.Main).launch {
+            useCases.getSelfConnectionStatusFlow()
+                .collect { connection ->
+                    val currentUserName = useCases.getCurrentUser()?.name.toString()
+
+                    val notification: Notification = Notification
+                        .Builder(
+                            this@ToxService,
+                            getString(R.string.foreground_service_notification_channel_id)
+                        )
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText("Toxoid status: ${connection.name}. User name: $currentUserName")
+                        .setTicker(getString(R.string.foreground_service_notification_ticker))
+                        .setSmallIcon(R.drawable.art_welcome)
+                        .build()
+
+                    notificationManager.notify(
+                        R.id.foreground_service_notification_id,
+                        notification
+                    )
+                }
+        }
     }
 }

@@ -48,4 +48,8 @@ class ToxEventDataSource @Inject constructor() {
         return toxSelfConnectionStatusFlow
     }
 
+    fun getLatestSelfConnectionStatus(): ToxConnection {
+        return toxSelfConnectionStatusFlow.value
+    }
+
 }

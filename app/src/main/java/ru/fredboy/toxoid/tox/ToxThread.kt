@@ -5,14 +5,19 @@ import android.util.Log
 import android.widget.Toast
 import dagger.hilt.android.qualifiers.ApplicationContext
 import im.tox.tox4j.core.ToxCore
+import im.tox.tox4j.core.enums.ToxConnection
+import im.tox.tox4j.core.exceptions.ToxBootstrapException
+import im.tox.tox4j.core.options.ToxOptions
 import im.tox.tox4j.impl.jni.ToxCoreImpl
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
+import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
 import ru.fredboy.toxoid.utils.bytesToHexString
 import java.io.IOException
 import java.lang.Runnable
+import java.util.*
 import javax.inject.Inject
+import kotlin.NoSuchElementException
 
 class ToxThread @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -33,13 +38,9 @@ class ToxThread @Inject constructor(
     override fun run() {
 
         runBlocking {
-            val currentUser = useCases.getCurrentUser()
-
             val toxOptions = try {
-                currentUser?.id?.let { toxId ->
-                    useCases.loadToxData(toxId)
-                } ?: useCases.createNewToxOptions()
-            } catch (e: IOException) {
+                tryLoadDataForCurrentUser()
+            } catch (e: Exception) {
                 useCases.createNewToxOptions()
             }
 
@@ -49,14 +50,38 @@ class ToxThread @Inject constructor(
             Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.address)}")
 
 
-            val bootstrapNodes = useCases.getSavedBootstrapNodes()
-            val bootstrapNode = bootstrapNodes.first()
+            val bootstrapNodesIterator = useCases.getSavedBootstrapNodes().iterator()
 
-            toxCore.bootstrap(
-                bootstrapNode.host,
-                bootstrapNode.port,
-                bootstrapNode.publicKey.value()
-            )
+            Timer().scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    val thisTimerTask = this
+                    when (useCases.getLatestSelfConnectionStatus()) {
+                        ToxConnection.NONE -> {
+                            if (!bootstrapNodesIterator.hasNext()) {
+                                Log.e(TAG, "Failed bootstrapping")
+                                thisTimerTask.cancel()
+                            } else {
+                                var isGoodNode = false
+                                while (bootstrapNodesIterator.hasNext()) {
+                                    val bootstrapNode = bootstrapNodesIterator.next()
+                                    Log.d(TAG, "Trying ${bootstrapNode.host}")
+                                    isGoodNode = toxCore.tryBootstrap(bootstrapNode)
+                                    if (isGoodNode) {
+                                        break
+                                    }
+                                }
+                                if (!bootstrapNodesIterator.hasNext() && !isGoodNode) {
+                                    Log.e(TAG, "Failed bootstrapping")
+                                    thisTimerTask.cancel()
+                                }
+                            }
+                        }
+                        else -> {
+                            thisTimerTask.cancel()
+                        }
+                    }
+                }
+            }, 0L, BOOTSTRAP_TIMEOUT)
 
             useCases.saveToxData(bytesToHexString(toxCore.address), toxCore.savedata)
         }
@@ -82,8 +107,30 @@ class ToxThread @Inject constructor(
         Log.d(TAG, "dead")
     }
 
+    private suspend fun tryLoadDataForCurrentUser(): ToxOptions {
+        val currentUser = useCases.getCurrentUser()
+            ?: throw IllegalStateException("No current user")
+
+        return useCases.loadToxData(currentUser.id)
+    }
+
+    private fun ToxCore.tryBootstrap(bootstrapNode: BootstrapNode): Boolean {
+        return try {
+            bootstrap(
+                bootstrapNode.host,
+                bootstrapNode.port,
+                bootstrapNode.publicKey.value()
+            )
+            true
+        } catch (e: ToxBootstrapException) {
+            false
+        }
+    }
+
     companion object {
         private const val TAG = "ToxThread"
+
+        private const val BOOTSTRAP_TIMEOUT = 20000L
     }
 
 }

@@ -17,4 +17,8 @@ class ToxSelfConnectionRepository @Inject constructor(
         return toxEventDataSource.getSelfConnectionStatusFlow()
     }
 
+    fun getLatestSelfConnectionStatus(): ToxConnection {
+        return toxEventDataSource.getLatestSelfConnectionStatus()
+    }
+
 }
