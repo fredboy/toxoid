@@ -103,6 +103,7 @@ dependencies {
 
     // materialdrawer
     implementation "com.mikepenz:materialdrawer:${versions.materialDrawer}"
+    implementation "com.mikepenz:materialdrawer-nav:${versions.materialDrawer}"
 
     // fastadapter
     implementation "com.mikepenz:fastadapter:${versions.fastadapter}"

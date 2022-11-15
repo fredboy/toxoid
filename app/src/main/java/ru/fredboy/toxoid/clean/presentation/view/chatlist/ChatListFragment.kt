@@ -44,6 +44,12 @@ class ChatListFragment : BaseMvpFragment(), ChatListView {
 
         with(binding) {
             chatListRecycler.adapter = fastAdapter
+
+            chatListAddContact.setOnClickListener {
+                findNavController().navigate(
+                    ChatListFragmentDirections.actionChatListFragmentToAddContactFragment()
+                )
+            }
         }
 
         fastAdapter.onClickListener = { _, _, item, _ ->

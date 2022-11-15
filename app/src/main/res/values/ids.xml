@@ -4,4 +4,5 @@
     <item name="item_chat_message" type="id"/>
     <item name="item_bootstrap_node" type="id"/>
     <item name="foreground_service_notification_id" type="id"/>
+    <item name="item_account_header" type="id"/>
 </resources>

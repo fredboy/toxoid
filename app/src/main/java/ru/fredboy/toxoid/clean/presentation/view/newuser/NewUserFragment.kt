@@ -29,8 +29,6 @@ class NewUserFragment : BaseMvpFragment(), NewUserView {
 
     private val presenter by moxyPresenter { presenterProvider.get() }
 
-    private val resultIntent = Intent()
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,8 +58,6 @@ class NewUserFragment : BaseMvpFragment(), NewUserView {
     }
 
     override fun setNewUser(user: LocalUser) {
-        resultIntent.putExtra(MainActivity.KEY_LOCAL_USER, user)
-        activity?.setResult(MainActivity.RESULT_USER_CREATED, resultIntent)
         activity?.finish()
     }
 
