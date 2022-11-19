@@ -5,6 +5,7 @@ import im.tox.tox4j.core.options.ToxOptions
 import kotlinx.coroutines.flow.Flow
 import ru.fredboy.toxoid.clean.data.model.FriendRequestData
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
+import ru.fredboy.toxoid.clean.domain.model.FriendRequest
 import ru.fredboy.toxoid.clean.domain.model.LocalUser
 import ru.fredboy.toxoid.clean.domain.usecase.*
 import ru.fredboy.toxoid.utils.ToxId
@@ -21,6 +22,7 @@ class ToxServiceUseCases @Inject constructor(
     private val loadToxDataUseCase: LoadToxDataUseCase,
     private val saveToxDataUseCase: SaveToxDataUseCase,
     private val getLatestSelfConnectionStatusUseCase: GetLatestSelfConnectionStatusUseCase,
+    private val getOutgoingFriendRequestFlowUseCase: GetOutgoingFriendRequestFlowUseCase,
 ) {
 
     suspend fun createNewToxOptions(): ToxOptions {
@@ -61,6 +63,10 @@ class ToxServiceUseCases @Inject constructor(
 
     fun getLatestSelfConnectionStatus(): ToxConnection {
         return getLatestSelfConnectionStatusUseCase.execute()
+    }
+
+    fun getOutgoingFriendRequestFlow(): Flow<FriendRequest> {
+        return getOutgoingFriendRequestFlowUseCase.execute()
     }
 
 }

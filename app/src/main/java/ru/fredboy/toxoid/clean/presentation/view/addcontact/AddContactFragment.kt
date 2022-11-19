@@ -8,6 +8,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import moxy.MvpBottomSheetDialogFragment
 import moxy.ktx.moxyPresenter
 import ru.fredboy.toxoid.databinding.FragmentAddContactBinding
+import ru.fredboy.toxoid.utils.validateToxId
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -27,6 +28,18 @@ class AddContactFragment : MvpBottomSheetDialogFragment(), AddContactView {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAddContactBinding.inflate(inflater)
+
+        with(binding) {
+            addContactAddButton.setOnClickListener {
+                val toxId = addContactToxidInput.text.toString()
+                if (!validateToxId(toxId)) {
+                    return@setOnClickListener
+                }
+
+                presenter.sendFriendRequest(toxId)
+            }
+        }
+
         return binding.root
     }
 

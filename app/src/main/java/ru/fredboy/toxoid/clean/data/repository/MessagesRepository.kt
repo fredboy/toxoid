@@ -1,6 +1,8 @@
 package ru.fredboy.toxoid.clean.data.repository
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import ru.fredboy.toxoid.clean.data.mapper.MessageMapper
 import ru.fredboy.toxoid.clean.data.source.message.MessageDataSource
@@ -53,6 +55,7 @@ class MessagesRepository @Inject constructor(
 
     fun getNewMessageFlow(): Flow<Message> {
         return messageDataSource.getNewMessageFlow()
+            .flowOn(Dispatchers.IO)
             .map { dto -> messageMapper.map(dto) }
     }
 

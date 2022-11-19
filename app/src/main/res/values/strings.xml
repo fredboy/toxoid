@@ -12,7 +12,7 @@
     <string name="chat_list_fragment_label">Chats</string>
     <string name="peer_picture_content_description">User image</string>
     <string name="chat_fragment_label">Messages</string>
-    <string name="message_edit_hint">Write your message...</string>
+    <string name="message_edit_hint">Write your message…</string>
     <string name="send">Send</string>
     <string name="continue_text">Continue</string>
     <string name="welcome">Welcome</string>
@@ -28,4 +28,6 @@
     <string name="user_new_password">New password</string>
     <string name="your_new_toxid">Your new ToxID:</string>
     <string name="choose_bootstrap_nodes">Choose bootstrap nodes</string>
+    <string name="add">ADD</string>
+    <string name="toxid_caps">TOXID</string>
 </resources>

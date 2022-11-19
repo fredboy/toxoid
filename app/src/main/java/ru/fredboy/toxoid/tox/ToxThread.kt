@@ -88,13 +88,22 @@ class ToxThread @Inject constructor(
 
         CoroutineScope(Dispatchers.Main).launch {
             useCases.getSelfConnectionStatusFlow()
-                .flowOn(Dispatchers.IO)
                 .collect {
                     Toast.makeText(
                         context,
                         "Connection status: ${it.name}",
                         Toast.LENGTH_SHORT
                     ).show()
+                }
+        }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            useCases.getOutgoingFriendRequestFlow()
+                .collect { friendRequest ->
+                    toxCore.addFriend(
+                        friendRequest.publicKey.value(),
+                        friendRequest.message.toByteArray()
+                    )
                 }
         }
 
