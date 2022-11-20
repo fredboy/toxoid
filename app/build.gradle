@@ -54,11 +54,11 @@ android {
 }
 
 configurations {
-    needFixing
+    fixArchPath
 }
 
 tasks.register("fixPaths") {
-    configurations.needFixing.asFileTree.forEach { jar ->
+    configurations.fixArchPath.asFileTree.forEach { jar ->
         String arch
         if (jar.name.contains("aarch64")) {
             arch = "arm64-v8a"
@@ -141,10 +141,10 @@ dependencies {
     implementation "io.reactivex.rxjava3:rxandroid:${versions.rxandroid}"*/
 
     // tox
-    needFixing "org.toktok:tox4j-c_aarch64-linux-android:0.2.13"
-    needFixing "org.toktok:tox4j-c_armv7a-linux-androideabi:0.2.13"
-    needFixing "org.toktok:tox4j-c_x86_64-linux-android:0.2.13"
-    needFixing "org.toktok:tox4j-c_i686-linux-android:0.2.13"
+    fixArchPath "org.toktok:tox4j-c_aarch64-linux-android:0.2.13"
+    fixArchPath "org.toktok:tox4j-c_armv7a-linux-androideabi:0.2.13"
+    fixArchPath "org.toktok:tox4j-c_x86_64-linux-android:0.2.13"
+    fixArchPath "org.toktok:tox4j-c_i686-linux-android:0.2.13"
     implementation "org.toktok:tox4j-c_2.11:0.2.3"
     api "org.toktok:tox4j-api_2.11:0.2.3"
 
