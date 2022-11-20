@@ -2,9 +2,9 @@ package ru.fredboy.toxoid.clean.presentation.view.chat
 
 import kotlinx.coroutines.flow.Flow
 import ru.fredboy.toxoid.clean.domain.model.Message
-import ru.fredboy.toxoid.clean.domain.usecase.GetChatMessagesUseCase
-import ru.fredboy.toxoid.clean.domain.usecase.GetNewMessageFlowUseCase
-import ru.fredboy.toxoid.clean.domain.usecase.SendMessageUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.message.GetChatMessagesUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.message.GetNewMessageFlowUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.message.SendMessageUseCase
 import javax.inject.Inject
 
 class ChatUseCases @Inject constructor(

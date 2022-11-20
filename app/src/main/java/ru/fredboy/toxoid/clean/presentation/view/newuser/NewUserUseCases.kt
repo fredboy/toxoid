@@ -2,9 +2,9 @@ package ru.fredboy.toxoid.clean.presentation.view.newuser
 
 import kotlinx.coroutines.flow.Flow
 import ru.fredboy.toxoid.clean.domain.model.LocalUser
-import ru.fredboy.toxoid.clean.domain.usecase.AddNewUserUseCase
-import ru.fredboy.toxoid.clean.domain.usecase.GetOwnToxIdFlowUseCase
-import ru.fredboy.toxoid.clean.domain.usecase.SetCurrentUserUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.user.AddNewUserUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.tox.GetOwnToxIdFlowUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.user.SetCurrentUserUseCase
 import ru.fredboy.toxoid.utils.ToxId
 import javax.inject.Inject
 

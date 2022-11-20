@@ -2,7 +2,13 @@ package ru.fredboy.toxoid.clean.presentation.view.chatlist
 
 import kotlinx.coroutines.flow.Flow
 import ru.fredboy.toxoid.clean.domain.model.*
-import ru.fredboy.toxoid.clean.domain.usecase.*
+import ru.fredboy.toxoid.clean.domain.usecase.chat.GetAllChatsUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.chat.GetChatByContactIdUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.chat.GetChatByIdUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.contact.GetContactUpdatesFlowUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.friendrequest.GetNewFriendRequestFlowUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.message.GetNewMessageFlowUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
 import javax.inject.Inject
 
 class ChatListUseCases @Inject constructor(

@@ -10,7 +10,12 @@ import ru.fredboy.toxoid.clean.data.model.FriendRequestData
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
 import ru.fredboy.toxoid.clean.domain.model.FriendRequest
 import ru.fredboy.toxoid.clean.domain.model.LocalUser
-import ru.fredboy.toxoid.clean.domain.usecase.*
+import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.GetSavedBootstrapNodesUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.contact.SetContactNameUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.friendrequest.BroadcastNewFriendRequestUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.friendrequest.GetOutgoingFriendRequestFlowUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.tox.*
+import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
 import ru.fredboy.toxoid.utils.ToxId
 import javax.inject.Inject
 

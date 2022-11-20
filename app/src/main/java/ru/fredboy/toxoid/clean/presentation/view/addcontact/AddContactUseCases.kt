@@ -1,6 +1,6 @@
 package ru.fredboy.toxoid.clean.presentation.view.addcontact
 
-import ru.fredboy.toxoid.clean.domain.usecase.SendFriendRequestUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.friendrequest.SendFriendRequestUseCase
 import javax.inject.Inject
 
 class AddContactUseCases @Inject constructor(

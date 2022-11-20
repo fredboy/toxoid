@@ -1,9 +1,9 @@
 package ru.fredboy.toxoid.clean.presentation.view.bootstrap
 
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
-import ru.fredboy.toxoid.clean.domain.usecase.DeleteBootstrapNodeUseCase
-import ru.fredboy.toxoid.clean.domain.usecase.GetBootstrapNodesUseCase
-import ru.fredboy.toxoid.clean.domain.usecase.SaveBootstrapNodeUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.DeleteBootstrapNodeUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.GetBootstrapNodesUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.SaveBootstrapNodeUseCase
 import javax.inject.Inject
 
 class BootstrapUseCases @Inject constructor(
