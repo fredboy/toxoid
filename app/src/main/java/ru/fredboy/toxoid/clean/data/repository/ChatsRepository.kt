@@ -1,11 +1,12 @@
 package ru.fredboy.toxoid.clean.data.repository
 
 import ru.fredboy.toxoid.clean.data.mapper.ChatMapper
-import ru.fredboy.toxoid.clean.data.model.room.ChatEntity
 import ru.fredboy.toxoid.clean.data.source.chat.ChatDataSource
 import ru.fredboy.toxoid.clean.data.source.contact.ContactDataSource
 import ru.fredboy.toxoid.clean.data.source.message.MessageDataSource
 import ru.fredboy.toxoid.clean.domain.model.Chat
+import ru.fredboy.toxoid.clean.domain.model.Contact
+import ru.fredboy.toxoid.utils.generateRandomStringId
 import ru.fredboy.toxoid.utils.withIoDispatcher
 import javax.inject.Inject
 
@@ -23,9 +24,13 @@ class ChatsRepository @Inject constructor(
         }
     }
 
-    suspend fun getForContact(contactId: String): ChatEntity? {
+    suspend fun getForContact(contactId: String): Chat? {
         return withIoDispatcher {
-            chatDataSource.getForContact(contactId)
+            val chat = chatDataSource.getForContact(contactId) ?: return@withIoDispatcher null
+            val contact = contactDataSource.getById(contactId) ?: return@withIoDispatcher null
+            val messages = messageDataSource.getAllFromChat(chat.id)
+
+            chatMapper.map(chat, contact, messages)
         }
     }
 
@@ -47,6 +52,24 @@ class ChatsRepository @Inject constructor(
             val messages = messageDataSource.getAllFromChat(chat.id)
 
             chatMapper.map(chat, contact, messages)
+        }
+    }
+
+    suspend fun createForContact(contact: Contact): Chat {
+        return withIoDispatcher {
+            val exists = getForContact(contact.id) != null
+            if (exists) {
+                throw IllegalArgumentException("Chat with contact ${contact.id} already exists")
+            }
+
+            val chat = Chat(
+                id = generateRandomStringId(),
+                peer = contact,
+                messages = emptyList()
+            )
+
+            add(chat)
+            chat
         }
     }
 

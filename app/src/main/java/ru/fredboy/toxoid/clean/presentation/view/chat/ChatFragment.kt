@@ -56,14 +56,14 @@ class ChatFragment : BaseMvpFragment(), ChatView {
             chatMessagesRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy < 0) {
-                        hideSoftInput()
+                        hideSoftInput(binding)
                     }
                 }
             })
 
             chatMessageEdit.setOnFocusChangeListener { _, hasFocus ->
                 if (!hasFocus) {
-                    hideSoftInput()
+                    hideSoftInput(binding)
                 }
             }
 
@@ -85,12 +85,5 @@ class ChatFragment : BaseMvpFragment(), ChatView {
         presenter.onSendButtonClicked(binding.chatMessageEdit.text.toString())
         binding.chatMessageEdit.text.clear()
     }
-
-    private fun hideSoftInput() {
-        val inputManager = context
-            ?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager?
-        inputManager?.hideSoftInputFromWindow(binding.root.windowToken, 0)
-    }
-
 
 }

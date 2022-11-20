@@ -70,7 +70,9 @@ class ChatListFragment : BaseMvpFragment(), ChatListView {
 
     override fun insertItem(chatListItemVo: ChatListItemVo) {
         val index = itemAdapter.adapterItems.indexOfFirst { it.chatId == chatListItemVo.chatId }
-        itemAdapter.remove(index)
+        if (index > -1) {
+            itemAdapter.remove(index)
+        }
         itemAdapter.add(0, chatListItemVo)
     }
 

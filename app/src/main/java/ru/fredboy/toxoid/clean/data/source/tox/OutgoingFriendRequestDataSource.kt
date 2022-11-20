@@ -10,8 +10,10 @@ import javax.inject.Singleton
 @Singleton
 class OutgoingFriendRequestDataSource @Inject constructor() {
 
-    private val outgoingFriendRequestFlow = MutableSharedFlow<FriendRequest>(replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val outgoingFriendRequestFlow = MutableSharedFlow<FriendRequest>(
+        replay = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     fun send(friendRequest: FriendRequest) {
         outgoingFriendRequestFlow.tryEmit(friendRequest)

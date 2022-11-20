@@ -1,8 +1,10 @@
 package ru.fredboy.toxoid.clean.presentation.view.chatlist
 
 import android.util.Log
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import moxy.presenterScope
+import ru.fredboy.toxoid.clean.domain.model.Contact
 import ru.fredboy.toxoid.clean.domain.model.Message
 import ru.fredboy.toxoid.clean.presentation.formatter.ChatListItemFormatter
 import ru.fredboy.toxoid.clean.presentation.view.base.BaseMvpPresenter
@@ -21,6 +23,8 @@ class ChatListPresenter @Inject constructor(
             .schedule({ request ->
                 viewState.showToast("New friend request from: ${request.publicKey.toHexString()}\nMessage: ${request.message}")
             })
+        useCases.getContactUpdatesFlow()
+            .schedule(::handleContactUpdate)
     }
 
     private fun handleNewMessage(message: Message) {
@@ -28,6 +32,14 @@ class ChatListPresenter @Inject constructor(
             val chat = useCases.getChatById(message.chatId)
                 ?.let { chatListItemFormatter.format(it) } ?: return@launch
             viewState.insertItem(chat)
+        }
+    }
+
+    private fun handleContactUpdate(contact: Contact) {
+        presenterScope.launch {
+            val chat = useCases.getChatByContactId(contact.id) ?: return@launch
+            val vo = chatListItemFormatter.format(chat)
+            viewState.insertItem(vo)
         }
     }
 

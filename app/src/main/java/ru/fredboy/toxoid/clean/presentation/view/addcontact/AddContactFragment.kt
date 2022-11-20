@@ -1,9 +1,13 @@
 package ru.fredboy.toxoid.clean.presentation.view.addcontact
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import androidx.viewbinding.ViewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import moxy.MvpBottomSheetDialogFragment
 import moxy.ktx.moxyPresenter
@@ -31,16 +35,37 @@ class AddContactFragment : MvpBottomSheetDialogFragment(), AddContactView {
 
         with(binding) {
             addContactAddButton.setOnClickListener {
-                val toxId = addContactToxidInput.text.toString()
-                if (!validateToxId(toxId)) {
-                    return@setOnClickListener
+                validateToxIdAndSendRequest(
+                    toxId = addContactToxidInput.text.toString()
+                )
+            }
+            addContactToxidInput.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+                    return@setOnEditorActionListener validateToxIdAndSendRequest(
+                        toxId = addContactToxidInput.text.toString()
+                    )
                 }
-
-                presenter.sendFriendRequest(toxId)
+                return@setOnEditorActionListener false
             }
         }
 
         return binding.root
+    }
+
+    private fun validateToxIdAndSendRequest(toxId: String): Boolean {
+        return validateToxId(toxId).also { valid ->
+            if (valid) {
+                presenter.sendFriendRequest(toxId)
+                hideSoftInput()
+                this.dismiss()
+            }
+        }
+    }
+
+    private fun hideSoftInput() {
+        val inputManager = context
+            ?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager?
+        inputManager?.hideSoftInputFromWindow(binding.root.windowToken, 0)
     }
 
 }

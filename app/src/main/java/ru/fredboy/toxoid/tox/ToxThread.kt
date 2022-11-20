@@ -11,17 +11,17 @@ import im.tox.tox4j.core.options.ToxOptions
 import im.tox.tox4j.impl.jni.ToxCoreImpl
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import ru.fredboy.toxoid.clean.data.mapper.ToxPublicKeyMapper
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
 import ru.fredboy.toxoid.utils.bytesToHexString
-import java.io.IOException
 import java.lang.Runnable
 import java.util.*
 import javax.inject.Inject
-import kotlin.NoSuchElementException
 
 class ToxThread @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val useCases: ToxServiceUseCases
+    private val useCases: ToxServiceUseCases,
+    private val toxPublicKeyMapper: ToxPublicKeyMapper
 ) : Runnable {
 
     private val backgroundThread = Thread(this)
@@ -107,7 +107,14 @@ class ToxThread @Inject constructor(
                 }
         }
 
-        val eventListener = ToxEventListenerImpl(useCases)
+        // FIXME: !!!
+        val eventListener = ToxEventListenerImpl(useCases) { i ->
+            bytesToHexString(
+                toxPublicKeyMapper.map(
+                    toxCore.getFriendPublicKey(i)
+                ).value()
+            )
+        }
         while (!Thread.currentThread().isInterrupted) {
             Thread.sleep(toxCore.iterationInterval().toLong())
             toxCore.iterate(eventListener, Any())

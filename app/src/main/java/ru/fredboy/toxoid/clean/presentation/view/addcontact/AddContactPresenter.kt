@@ -1,5 +1,7 @@
 package ru.fredboy.toxoid.clean.presentation.view.addcontact
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import moxy.presenterScope
 import ru.fredboy.toxoid.clean.domain.model.FriendRequest
@@ -11,7 +13,7 @@ class AddContactPresenter @Inject constructor(
 ) : BaseMvpPresenter<AddContactView>() {
 
     fun sendFriendRequest(toxId: String, message: String = "Hello") {
-        presenterScope.launch {
+        CoroutineScope(Dispatchers.Default).launch {
             useCases.sendFriendRequest(toxId, message)
         }
     }

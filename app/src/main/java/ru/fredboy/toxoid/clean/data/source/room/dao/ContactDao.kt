@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import ru.fredboy.toxoid.clean.data.model.room.ContactEntity
 import ru.fredboy.toxoid.clean.data.source.room.MainDatabase
 
@@ -16,7 +17,10 @@ interface ContactDao {
     @Query("SELECT * FROM ${MainDatabase.CONTACT_TABLE} WHERE id = :peerId")
     suspend fun getById(peerId: String): ContactEntity?
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vararg contacts: ContactEntity)
+
+    @Update
+    suspend fun update(contact: ContactEntity)
 
 }

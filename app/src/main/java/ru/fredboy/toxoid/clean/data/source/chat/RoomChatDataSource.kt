@@ -21,7 +21,7 @@ class RoomChatDataSource @Inject constructor(
     }
 
     override suspend fun getForContact(contactId: String): ChatEntity? {
-        TODO("Not yet implemented")
+        return mainDatabase.chatDao.getChatWithPeer(contactId)
     }
 
     override suspend fun add(chat: ChatEntity) {
