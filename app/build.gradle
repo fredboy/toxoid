@@ -45,7 +45,7 @@ android {
     }
     sourceSets {
         main {
-            jniLibs.srcDirs = ['src/main/jniLibs']
+            jniLibs.srcDirs = ['build/jniLibs']
         }
     }
     kapt {
@@ -72,10 +72,10 @@ tasks.register("fixPaths") {
             throw GradleException("Unknown arch")
         }
 
-        new File("src/main/jniLibs/$arch").mkdirs()
+        new File("build/jniLibs/$arch").mkdirs()
         copy {
             from(zipTree(jar).files)
-            into("src/main/jniLibs/$arch")
+            into("build/jniLibs/$arch")
             include("*.so")
         }
     }
