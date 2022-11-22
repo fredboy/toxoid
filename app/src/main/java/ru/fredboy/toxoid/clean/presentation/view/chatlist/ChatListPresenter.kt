@@ -6,7 +6,6 @@ import ru.fredboy.toxoid.clean.domain.model.Contact
 import ru.fredboy.toxoid.clean.domain.model.Message
 import ru.fredboy.toxoid.clean.presentation.formatter.ChatListItemFormatter
 import ru.fredboy.toxoid.clean.presentation.view.base.BaseMvpPresenter
-import ru.fredboy.toxoid.utils.bytesToHexString
 import javax.inject.Inject
 
 class ChatListPresenter @Inject constructor(
@@ -20,7 +19,7 @@ class ChatListPresenter @Inject constructor(
             .schedule(::handleNewMessage)
         useCases.getNewFriendRequestFlow()
             .schedule({ request ->
-                viewState.showToast("New friend request from: ${bytesToHexString(request.friendAddress.bytes)}\nMessage: ${request.message}")
+                viewState.showToast("New friend request from: ${request.friendAddress}\nMessage: ${request.message}")
             })
         useCases.getContactUpdatesFlow()
             .schedule(::handleContactUpdate)

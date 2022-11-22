@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import ru.fredboy.toxoid.clean.data.mapper.FriendRequestMapper
-import ru.fredboy.toxoid.clean.data.mapper.ToxFriendAddressMapper
+import ru.fredboy.toxoid.clean.data.mapper.ToxAddressMapper
 import ru.fredboy.toxoid.clean.data.model.FriendRequestData
 import ru.fredboy.toxoid.clean.data.source.intent.ToxServiceIntentApi
 import ru.fredboy.toxoid.clean.data.source.tox.CachedFriendRequestDataSource
@@ -20,7 +20,7 @@ class FriendRequestRepository @Inject constructor(
     private val cachedFriendRequestDataSource: CachedFriendRequestDataSource,
     private val friendRequestMapper: FriendRequestMapper,
     private val toxEventDataSource: ToxEventDataSource,
-    private val toxFriendAddressMapper: ToxFriendAddressMapper,
+    private val toxAddressMapper: ToxAddressMapper,
     private val toxServiceIntentApi: ToxServiceIntentApi,
 ) {
 
@@ -74,7 +74,7 @@ class FriendRequestRepository @Inject constructor(
     }
 
     private fun createFriendRequest(toxId: String, message: String): FriendRequest {
-        val address = toxFriendAddressMapper.map(toxId)
+        val address = toxAddressMapper.map(toxId)
         return FriendRequest(
             friendAddress = address,
             message = message

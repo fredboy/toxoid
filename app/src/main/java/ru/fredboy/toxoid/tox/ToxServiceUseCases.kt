@@ -14,13 +14,11 @@ import ru.fredboy.toxoid.clean.domain.usecase.contact.SetContactNameUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.friendrequest.BroadcastNewFriendRequestUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.tox.*
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
-import ru.fredboy.toxoid.utils.ToxId
 import javax.inject.Inject
 
 class ToxServiceUseCases @Inject constructor(
     private val createNewToxOptionsUseCase: CreateNewToxOptionsUseCase,
     private val broadcastNewFriendRequestUseCase: BroadcastNewFriendRequestUseCase,
-    private val setOwnToxIdUseCase: SetOwnToxIdUseCase,
     private val streamSelfConnectionStatusUseCase: StreamSelfConnectionStatusUseCase,
     private val getSelfConnectionStatusFlowUseCase: GetSelfConnectionStatusFlowUseCase,
     private val getSavedBootstrapNodesUseCase: GetSavedBootstrapNodesUseCase,
@@ -37,10 +35,6 @@ class ToxServiceUseCases @Inject constructor(
 
     fun broadcastNewFriendRequest(requestData: FriendRequestData) {
         broadcastNewFriendRequestUseCase.execute(requestData)
-    }
-
-    fun setOwnToxId(toxId: ToxId) {
-        setOwnToxIdUseCase.execute(toxId)
     }
 
     fun streamSelfConnectionStatus(connection: ToxConnection) {

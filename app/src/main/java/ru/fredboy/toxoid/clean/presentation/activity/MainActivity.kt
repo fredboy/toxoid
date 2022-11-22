@@ -18,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import ru.fredboy.toxoid.R
 import ru.fredboy.toxoid.clean.domain.model.Identicon
+import ru.fredboy.toxoid.clean.domain.model.ToxAddress
 import ru.fredboy.toxoid.clean.domain.usecase.tox.InitToxServiceUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetAllUsersUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
@@ -85,7 +86,7 @@ class MainActivity : AppCompatActivity() {
                     ProfileDrawerItem().apply {
                         identifier = user.id.hashCode().toLong()
                         nameText = user.name
-                        iconDrawable = Identicon(hexStringToByteArray(user.id))
+                        iconDrawable = Identicon(ToxAddress(hexStringToByteArray(user.id)))
                             .getDrawable(resources, 160)
                     }
                 }.toTypedArray()

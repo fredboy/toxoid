@@ -24,6 +24,7 @@ import splitties.experimental.ExperimentalSplittiesApi
 class ToxServiceProvidersModule {
 
     @Provides
+    @ServiceScoped
     fun provideToxOptions(
         getCurrentUserUseCase: GetCurrentUserUseCase,
         loadToxDataUseCase: LoadToxDataUseCase,
@@ -37,6 +38,7 @@ class ToxServiceProvidersModule {
     }
 
     @Provides
+    @ServiceScoped
     fun provideToxCore(
         toxOptions: SuspendLazy<@JvmSuppressWildcards ToxOptions>
     ): SuspendLazy<ToxCore> {

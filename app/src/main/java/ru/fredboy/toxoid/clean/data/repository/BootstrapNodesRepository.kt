@@ -1,7 +1,6 @@
 package ru.fredboy.toxoid.clean.data.repository
 
 import ru.fredboy.toxoid.clean.data.mapper.BootstrapNodeMapper
-import ru.fredboy.toxoid.clean.data.mapper.ToxPublicKeyMapper
 import ru.fredboy.toxoid.clean.data.source.bootstrap.BootstrapNodeDataSource
 import ru.fredboy.toxoid.clean.data.source.bootstrap.ToxChatNodesDataSource
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
@@ -12,7 +11,6 @@ class BootstrapNodesRepository @Inject constructor(
     private val toxChatNodesDataSource: ToxChatNodesDataSource,
     private val bootstrapNodeMapper: BootstrapNodeMapper,
     private val bootstrapNodeDataSource: BootstrapNodeDataSource,
-    private val toxPublicKeyMapper: ToxPublicKeyMapper,
 ) {
 
     suspend fun getAvailableNodes(): List<BootstrapNode> {
@@ -39,7 +37,7 @@ class BootstrapNodesRepository @Inject constructor(
 
     suspend fun deleteNode(bootstrapNode: BootstrapNode) {
         withIoDispatcher {
-            bootstrapNodeDataSource.delete(toxPublicKeyMapper.map(bootstrapNode.publicKey))
+            bootstrapNodeDataSource.delete(bootstrapNode.publicKey.toString())
         }
     }
 

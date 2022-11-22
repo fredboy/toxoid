@@ -7,7 +7,6 @@ import moxy.presenterScope
 import ru.fredboy.toxoid.clean.domain.model.Identicon
 import ru.fredboy.toxoid.clean.domain.model.LocalUser
 import ru.fredboy.toxoid.clean.presentation.view.base.BaseMvpPresenter
-import ru.fredboy.toxoid.utils.bytesToHexString
 import javax.inject.Inject
 
 class NewUserPresenter @Inject constructor(
@@ -21,13 +20,11 @@ class NewUserPresenter @Inject constructor(
     }
 
     private fun createIdenticon() {
-        useCases.getOwnToxIdFlow()
-            .schedule({ toxId ->
-                viewState.showUserPhoto(
-                    Identicon(toxId)
-                        .getDrawable(context.resources, 160)
-                )
-            })
+        presenterScope.launch {
+            val address = useCases.getOwnToxAddress()
+            val identicon = Identicon(address).getDrawable(context.resources, 160)
+            viewState.showUserPhoto(identicon)
+        }
     }
 
     fun createNewUser(name: String, password: String) {
@@ -35,16 +32,14 @@ class NewUserPresenter @Inject constructor(
             return
         }
 
-        useCases.getOwnToxIdFlow()
-            .schedule( { toxId ->
-                val stringId = bytesToHexString(toxId)
-                val user = LocalUser(id = stringId, name = name)
-                presenterScope.launch {
-                    useCases.addNewUser(user)
-                    useCases.setCurrentUserUseCase(stringId)
-                    viewState.setNewUser(user)
-                }
-            })
+        presenterScope.launch {
+            val address = useCases.getOwnToxAddress()
+            val stringId = address.toString()
+            val user = LocalUser(id = stringId, name = name)
+            useCases.addNewUser(user)
+            useCases.setCurrentUserUseCase(stringId)
+            viewState.setNewUser(user)
+        }
     }
 
     fun initToxService() {

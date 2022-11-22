@@ -7,19 +7,19 @@ import ru.fredboy.toxoid.utils.bytesToHexString
 import javax.inject.Inject
 
 class FriendRequestMapper @Inject constructor(
-    private val toxFriendAddressMapper: ToxFriendAddressMapper,
+    private val toxAddressMapper: ToxAddressMapper,
 ) {
 
     fun map(request: FriendRequestEntity): FriendRequest {
         return FriendRequest(
-            friendAddress = toxFriendAddressMapper.map(request.toxid),
+            friendAddress = toxAddressMapper.map(request.toxid),
             message = request.message
         )
     }
 
     fun map(request: FriendRequest): FriendRequestEntity {
         return FriendRequestEntity(
-            toxid = toxFriendAddressMapper.map(request.friendAddress),
+            toxid = toxAddressMapper.toString(),
             message = request.message
         )
     }

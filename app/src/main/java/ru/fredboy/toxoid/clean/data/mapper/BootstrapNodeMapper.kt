@@ -31,7 +31,7 @@ class BootstrapNodeMapper @Inject constructor(
 
     fun map(node: BootstrapNode): BootstrapNodeEntity {
         return BootstrapNodeEntity(
-            id = toxPublicKeyMapper.map(node.publicKey),
+            id = node.publicKey.toString(),
             host = node.host,
             port = node.port,
             location = node.location,

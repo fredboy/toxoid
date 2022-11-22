@@ -43,7 +43,6 @@ class ToxThread @Inject constructor(
         runBlocking {
             toxCore = toxCoreLazy()
 
-            useCases.setOwnToxId(toxCore.address)
             Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.address)}")
 
 

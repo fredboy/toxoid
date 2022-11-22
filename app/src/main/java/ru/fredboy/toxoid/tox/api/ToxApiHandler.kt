@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import im.tox.tox4j.core.ToxCore
 import im.tox.tox4j.core.ToxCoreConstants
-import ru.fredboy.toxoid.clean.domain.model.ToxPublicKey
 import im.tox.tox4j.core.enums.ToxMessageType
 import im.tox.tox4j.core.exceptions.ToxFriendAddException
 import im.tox.tox4j.core.exceptions.ToxFriendByPublicKeyException
@@ -14,14 +13,10 @@ import im.tox.tox4j.core.exceptions.ToxFriendSendMessageException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.fredboy.toxoid.clean.data.model.intent.ToxServiceAddFriendArgs
-import ru.fredboy.toxoid.clean.data.model.intent.ToxServiceArgs
-import ru.fredboy.toxoid.clean.data.model.intent.ToxServiceSendMessageArgs
-import ru.fredboy.toxoid.clean.data.source.intent.ACTION_ADD_FRIEND
-import ru.fredboy.toxoid.clean.data.source.intent.ACTION_SEND_MESSAGE
-import ru.fredboy.toxoid.clean.data.source.intent.TOX_API_SEND_MESSAGE_ARGS
-import ru.fredboy.toxoid.clean.domain.model.FriendRequest
-import ru.fredboy.toxoid.clean.domain.model.Message
+import ru.fredboy.toxoid.R
+import ru.fredboy.toxoid.clean.data.model.intent.*
+import ru.fredboy.toxoid.clean.data.source.intent.*
+import ru.fredboy.toxoid.clean.domain.model.ToxAddress
 import ru.fredboy.toxoid.utils.bytesToHexString
 import ru.fredboy.toxoid.utils.exhaustive
 import splitties.coroutines.SuspendLazy
@@ -35,17 +30,18 @@ class ToxApiHandler @Inject constructor(
 ) {
 
     fun handleAction(action: String, data: Bundle) {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             val args: ToxServiceArgs = extractArgs(action, data)
 
             when (args) {
                 is ToxServiceSendMessageArgs -> sendMessage(args)
                 is ToxServiceAddFriendArgs -> sendFriendRequest(args)
+                is ToxServiceGetOwnAddressArgs -> getOwnToxAddress(args, data.getResultReceiver())
             }.exhaustive()
         }
     }
 
-    suspend fun sendMessage(args: ToxServiceSendMessageArgs) =
+    private suspend fun sendMessage(args: ToxServiceSendMessageArgs) =
         toxCoreLazy.execute { toxCore ->
             val recipientNumber = try {
                 toxCore.friendByPublicKey(args.recipientPublicKeyBytes)
@@ -75,7 +71,7 @@ class ToxApiHandler @Inject constructor(
                 }
         }
 
-    suspend fun sendFriendRequest(args: ToxServiceAddFriendArgs) =
+    private suspend fun sendFriendRequest(args: ToxServiceAddFriendArgs) =
         toxCoreLazy.execute { toxCore ->
             try {
                 toxCore.addFriend(
@@ -91,6 +87,20 @@ class ToxApiHandler @Inject constructor(
             }
         }
 
+    private suspend fun getOwnToxAddress(
+        args: ToxServiceGetOwnAddressArgs,
+        resultReceiver: ResultReceiver
+    ) =
+        toxCoreLazy.execute { toxCore ->
+            resultReceiver.send(R.id.result_code_okay, Bundle().apply {
+                putParcelable(
+                    ToxServiceGetOwnAddressResult.PARCEL_KEY, ToxServiceGetOwnAddressResult(
+                        ToxAddress(toxCore.address)
+                    )
+                )
+            })
+        }
+
     private fun extractArgs(action: String, data: Bundle): ToxServiceArgs {
         return when (action) {
             ACTION_SEND_MESSAGE -> data.getArgs(
@@ -101,12 +111,21 @@ class ToxApiHandler @Inject constructor(
                 parcelKey = ToxServiceAddFriendArgs.PARCEL_KEY,
                 type = ToxServiceAddFriendArgs::class.java
             )
+            ACTION_GET_OWN_ADDRESS -> data.getArgs(
+                parcelKey = ToxServiceGetOwnAddressArgs.PARCEL_KEY,
+                type = ToxServiceGetOwnAddressArgs::class.java
+            )
             else -> throw IllegalArgumentException("Unknown action: $action")
         }
     }
 
     private fun <T> Bundle.getArgs(parcelKey: String, type: Class<T>): T {
         return getParcelable(parcelKey, type) ?: throw IllegalArgumentException()
+    }
+
+    private fun Bundle.getResultReceiver(): ResultReceiver {
+        return getParcelable(EXTRA_CALLBACK, ResultReceiver::class.java)
+            ?: throw IllegalStateException("No result receiver")
     }
 
     private suspend fun <T> SuspendLazy<ToxCore>.execute(

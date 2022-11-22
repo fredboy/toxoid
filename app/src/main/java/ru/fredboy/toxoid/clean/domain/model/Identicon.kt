@@ -7,12 +7,11 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.scale
 import com.google.common.hash.Hashing
 import ru.fredboy.toxoid.BuildConfig
-import ru.fredboy.toxoid.utils.ToxId
 import kotlin.math.abs
 
 
 data class Identicon(
-    val toxId: ToxId
+    val address: ToxAddress
 ) {
     private val bitmap: Bitmap
 
@@ -21,7 +20,7 @@ data class Identicon(
 
     init {
         @Suppress("UnstableApiUsage")
-        val hash = Hashing.sha256().hashBytes(toxId).asBytes()
+        val hash = Hashing.sha256().hashBytes(address.bytes).asBytes()
             .asSequence()
             .map { it.toUByte().toInt() }
             .toList()
@@ -86,21 +85,6 @@ data class Identicon(
     fun getDrawable(resources: Resources, scaleFactor: Int): BitmapDrawable {
         val size = bitmap.width * if (scaleFactor >= 1) scaleFactor else 1
         return BitmapDrawable(resources, bitmap.scale(size, size, false))
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Identicon
-
-        if (!toxId.contentEquals(other.toxId)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return toxId.contentHashCode()
     }
 
     companion object {
