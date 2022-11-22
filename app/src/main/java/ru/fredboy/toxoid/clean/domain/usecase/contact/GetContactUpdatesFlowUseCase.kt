@@ -10,7 +10,7 @@ class GetContactUpdatesFlowUseCase @Inject constructor(
 ) {
 
     fun execute(): Flow<Contact> {
-        return contactsRepository.getUpdatesFlow()
+        return contactsRepository.getContactNameUpdatesFlow()
     }
 
 }

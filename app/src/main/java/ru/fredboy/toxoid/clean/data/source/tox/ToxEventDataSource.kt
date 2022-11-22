@@ -1,26 +1,24 @@
 package ru.fredboy.toxoid.clean.data.source.tox
 
 import im.tox.tox4j.core.enums.ToxConnection
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import ru.fredboy.toxoid.clean.data.model.FriendRequestData
-import ru.fredboy.toxoid.clean.domain.model.ToxAddress
+import ru.fredboy.toxoid.clean.data.model.tox.FriendRequestData
+import ru.fredboy.toxoid.clean.data.model.tox.NewFriendNameData
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ToxEventDataSource @Inject constructor() {
 
-    private val ownToxAddressFlow = MutableSharedFlow<ToxAddress>(
-        replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
-
     private val toxSelfConnectionStatusFlow = MutableStateFlow(ToxConnection.NONE)
 
     private val friendRequestFlow = MutableSharedFlow<FriendRequestData>(
+        extraBufferCapacity = 10
+    )
+
+    private val friendNameFlow = MutableSharedFlow<NewFriendNameData>(
         extraBufferCapacity = 10
     )
 
@@ -30,14 +28,6 @@ class ToxEventDataSource @Inject constructor() {
 
     fun getFriendRequestFlow(): Flow<FriendRequestData> {
         return friendRequestFlow
-    }
-
-    fun setOwnToxAddress(address: ToxAddress) {
-        ownToxAddressFlow.tryEmit(address)
-    }
-
-    fun getOwnToxAddressFlow(): Flow<ToxAddress> {
-        return ownToxAddressFlow
     }
 
     fun streamSefConnectionStatus(connectionStatus: ToxConnection) {
@@ -50,6 +40,14 @@ class ToxEventDataSource @Inject constructor() {
 
     fun getLatestSelfConnectionStatus(): ToxConnection {
         return toxSelfConnectionStatusFlow.value
+    }
+
+    fun flowNewFriendNameData(friendNameData: NewFriendNameData) {
+        friendNameFlow.tryEmit(friendNameData)
+    }
+
+    fun getNewFriendNameDataFlow(): Flow<NewFriendNameData> {
+        return friendNameFlow
     }
 
 }

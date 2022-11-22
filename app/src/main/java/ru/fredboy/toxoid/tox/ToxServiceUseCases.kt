@@ -2,15 +2,16 @@ package ru.fredboy.toxoid.tox
 
 import im.tox.tox4j.core.enums.ToxConnection
 import im.tox.tox4j.core.options.ToxOptions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
-import ru.fredboy.toxoid.clean.data.model.FriendRequestData
+import ru.fredboy.toxoid.clean.data.model.tox.FriendRequestData
+import ru.fredboy.toxoid.clean.data.model.tox.NewFriendNameData
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
+import ru.fredboy.toxoid.clean.domain.model.Contact
 import ru.fredboy.toxoid.clean.domain.model.LocalUser
 import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.GetSavedBootstrapNodesUseCase
-import ru.fredboy.toxoid.clean.domain.usecase.contact.SetContactNameUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.contact.FlowNewContactNameUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.contact.GetContactUpdatesFlowUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.contact.UpdateContactUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.friendrequest.BroadcastNewFriendRequestUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.tox.*
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
@@ -26,7 +27,9 @@ class ToxServiceUseCases @Inject constructor(
     private val loadToxDataUseCase: LoadToxDataUseCase,
     private val saveToxDataUseCase: SaveToxDataUseCase,
     private val getLatestSelfConnectionStatusUseCase: GetLatestSelfConnectionStatusUseCase,
-    private val setContactNameUseCase: SetContactNameUseCase,
+    private val flowNewContactNameUseCase: FlowNewContactNameUseCase,
+    private val getContactUpdatesFlowUseCase: GetContactUpdatesFlowUseCase,
+    private val updateContactUseCase: UpdateContactUseCase,
 ) {
 
     suspend fun createNewToxOptions(): ToxOptions {
@@ -65,9 +68,16 @@ class ToxServiceUseCases @Inject constructor(
         return getLatestSelfConnectionStatusUseCase.execute()
     }
 
-    fun setContactName(contactId: String, newName: String) {
-        // FIXME: !!!
-        CoroutineScope(Dispatchers.IO).launch { setContactNameUseCase.execute(contactId, newName) }
+    fun flowNewContactName(friendNameData: NewFriendNameData) {
+        flowNewContactNameUseCase.execute(friendNameData)
+    }
+
+    fun getContactUpdatesFlow(): Flow<Contact> {
+        return getContactUpdatesFlowUseCase.execute()
+    }
+
+    suspend fun updateContact(contact: Contact) {
+        updateContactUseCase.execute(contact)
     }
 
 }

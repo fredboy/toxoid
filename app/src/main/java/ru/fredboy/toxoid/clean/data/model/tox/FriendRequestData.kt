@@ -1,4 +1,4 @@
-package ru.fredboy.toxoid.clean.data.model
+package ru.fredboy.toxoid.clean.data.model.tox
 
 data class FriendRequestData(
     val publicKeyBytes: ByteArray,

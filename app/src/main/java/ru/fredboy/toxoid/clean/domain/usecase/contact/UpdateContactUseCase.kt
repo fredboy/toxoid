@@ -1,14 +1,15 @@
 package ru.fredboy.toxoid.clean.domain.usecase.contact
 
 import ru.fredboy.toxoid.clean.data.repository.ContactsRepository
+import ru.fredboy.toxoid.clean.domain.model.Contact
 import javax.inject.Inject
 
-class SetContactNameUseCase @Inject constructor(
+class UpdateContactUseCase @Inject constructor(
     private val contactsRepository: ContactsRepository,
 ) {
 
-    suspend fun execute(contactId: String, newName: String) {
-        contactsRepository.updateName(contactId, newName)
+    suspend fun execute(contact: Contact) {
+        contactsRepository.updateContact(contact)
     }
 
 }

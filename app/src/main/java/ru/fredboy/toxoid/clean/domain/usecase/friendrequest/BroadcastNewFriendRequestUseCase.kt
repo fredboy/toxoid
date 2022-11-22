@@ -1,6 +1,6 @@
 package ru.fredboy.toxoid.clean.domain.usecase.friendrequest
 
-import ru.fredboy.toxoid.clean.data.model.FriendRequestData
+import ru.fredboy.toxoid.clean.data.model.tox.FriendRequestData
 import ru.fredboy.toxoid.clean.data.repository.FriendRequestRepository
 import javax.inject.Inject
 

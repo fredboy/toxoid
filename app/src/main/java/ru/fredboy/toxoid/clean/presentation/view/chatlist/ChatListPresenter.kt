@@ -36,7 +36,7 @@ class ChatListPresenter @Inject constructor(
     private fun handleContactUpdate(contact: Contact) {
         presenterScope.launch {
             val chat = useCases.getChatByContactId(contact.id) ?: return@launch
-            val vo = chatListItemFormatter.format(chat)
+            val vo = chatListItemFormatter.format(chat.copy(peer = contact))
             viewState.insertItem(vo)
         }
     }

@@ -6,15 +6,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import ru.fredboy.toxoid.clean.data.mapper.ContactMapper
-import ru.fredboy.toxoid.clean.data.model.room.ContactEntity
+import ru.fredboy.toxoid.clean.data.model.tox.NewFriendNameData
 import ru.fredboy.toxoid.clean.data.source.contact.ContactDataSource
+import ru.fredboy.toxoid.clean.data.source.intent.ToxServiceIntentApi
+import ru.fredboy.toxoid.clean.data.source.tox.ToxEventDataSource
 import ru.fredboy.toxoid.clean.domain.model.Contact
+import ru.fredboy.toxoid.clean.domain.model.ToxPublicKey
 import ru.fredboy.toxoid.utils.withIoDispatcher
 import javax.inject.Inject
 
 class ContactsRepository @Inject constructor(
     private val contactDataSource: ContactDataSource,
-    private val contactMapper: ContactMapper
+    private val contactMapper: ContactMapper,
+    private val toxServiceIntentApi: ToxServiceIntentApi,
+    private val toxEventDataSource: ToxEventDataSource,
 ) {
 
     suspend fun getAll(): List<Contact> {
@@ -38,16 +43,35 @@ class ContactsRepository @Inject constructor(
         }
     }
 
-    suspend fun updateName(contactId: String, newName: String) {
-        withIoDispatcher {
-            contactDataSource.update(ContactEntity(contactId, newName))
+    private suspend fun resolveFriendNumberToPublicKey(friendNumber: Int): ToxPublicKey {
+        return withIoDispatcher {
+            toxServiceIntentApi.resolveFriendNumber(friendNumber)
         }
     }
 
-    fun getUpdatesFlow(): Flow<Contact> {
-        return contactDataSource.getUpdatesFlow()
+    suspend fun updateContact(contact: Contact) {
+        withIoDispatcher {
+            val contactEntity = contactMapper.map(contact)
+            contactDataSource.update(contactEntity)
+        }
+    }
+
+    fun flowNewFriendName(friendNameData: NewFriendNameData) {
+        toxEventDataSource.flowNewFriendNameData(friendNameData)
+    }
+
+    fun getContactNameUpdatesFlow(): Flow<Contact> {
+        return toxEventDataSource.getNewFriendNameDataFlow()
             .flowOn(Dispatchers.IO)
-            .map(contactMapper::map)
+            .map { data ->
+                val friendPublicKey = resolveFriendNumberToPublicKey(data.friendNumber)
+                val newFriendName = String(data.newFriendNameBytes)
+                friendPublicKey to newFriendName
+            }
+            .map { (friendPublicKey, newFriendName) ->
+                val contact = Contact(friendPublicKey.toString(), newFriendName)
+                contact
+            }
     }
 
     suspend fun createForToxId(toxId: String): Contact {

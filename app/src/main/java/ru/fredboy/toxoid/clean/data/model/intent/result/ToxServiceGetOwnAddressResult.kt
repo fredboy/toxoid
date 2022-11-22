@@ -6,9 +6,4 @@ import ru.fredboy.toxoid.clean.domain.model.ToxAddress
 @Parcelize
 data class ToxServiceGetOwnAddressResult(
     val address: ToxAddress,
-    override val error: Throwable? = null
-) : ToxServiceResult {
-    companion object {
-        const val PARCEL_KEY = "ToxServiceGetOwnAddressResultParcel"
-    }
-}
+) : ToxServiceResult

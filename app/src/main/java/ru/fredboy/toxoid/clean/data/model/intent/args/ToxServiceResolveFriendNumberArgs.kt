@@ -4,7 +4,7 @@ import android.os.ResultReceiver
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class ToxServiceGetOwnAddressArgs(
+data class ToxServiceResolveFriendNumberArgs(
+    val friendNumber: Int,
     override val resultReceiver: ResultReceiver
 ) : ToxServiceArgs
-

@@ -27,7 +27,4 @@ data class ToxServiceAddFriendArgs(
         return result
     }
 
-    companion object {
-        const val PARCEL_KEY = "ToxServiceAddFriendArgsParcel"
-    }
 }

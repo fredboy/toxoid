@@ -8,10 +8,7 @@ import im.tox.tox4j.core.ToxCore
 import kotlinx.coroutines.runBlocking
 import ru.fredboy.toxoid.R
 import ru.fredboy.toxoid.clean.data.model.intent.*
-import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceAddFriendArgs
-import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceArgs
-import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceGetOwnAddressArgs
-import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceSendMessageArgs
+import ru.fredboy.toxoid.clean.data.model.intent.args.*
 import ru.fredboy.toxoid.clean.data.source.intent.*
 import ru.fredboy.toxoid.tox.api.methods.*
 import splitties.coroutines.SuspendLazy
@@ -50,9 +47,8 @@ class ToxApiHandler @Inject constructor(
         }
     }
 
-    fun handleAction(action: String, data: Bundle) {
-        val args: ToxServiceArgs = extractArgs(action, data)
-        val method = getMethod(args)
+    fun handleAction(data: Bundle) {
+        val method = getMethod(data.getArgs())
         methodQueue.add(method)
     }
 
@@ -64,35 +60,19 @@ class ToxApiHandler @Inject constructor(
         executorThread.interrupt()
     }
 
-    private fun extractArgs(action: String, data: Bundle): ToxServiceArgs {
-        return when (action) {
-            ACTION_SEND_MESSAGE -> data.getArgs(
-                parcelKey = ToxServiceSendMessageArgs.PARCEL_KEY,
-                type = ToxServiceSendMessageArgs::class.java
-            )
-            ACTION_ADD_FRIEND -> data.getArgs(
-                parcelKey = ToxServiceAddFriendArgs.PARCEL_KEY,
-                type = ToxServiceAddFriendArgs::class.java
-            )
-            ACTION_GET_OWN_ADDRESS -> data.getArgs(
-                parcelKey = ToxServiceGetOwnAddressArgs.PARCEL_KEY,
-                type = ToxServiceGetOwnAddressArgs::class.java
-            )
-            else -> throw IllegalArgumentException("Unknown action: $action")
-        }
-    }
-
     private fun getMethod(args: ToxServiceArgs): ToxServiceGenericApiMethod {
         @Suppress("UNCHECKED_CAST")
         return when (args) {
             is ToxServiceSendMessageArgs -> SendMessageMethod(args)
             is ToxServiceAddFriendArgs -> AddFriendMethod(args)
             is ToxServiceGetOwnAddressArgs -> GetOwnToxAddressMethod(args)
+            is ToxServiceResolveFriendNumberArgs -> ResolveFriendNumberMethod(args)
         } as ToxServiceGenericApiMethod
     }
 
-    private fun <T> Bundle.getArgs(parcelKey: String, type: Class<T>): T {
-        return getParcelable(parcelKey, type) ?: throw IllegalArgumentException()
+    private fun Bundle.getArgs(): ToxServiceArgs {
+        return getParcelable(EXTRA_ARGUMENTS, ToxServiceArgs::class.java)
+            ?: throw IllegalStateException()
     }
 
     private suspend fun <T> SuspendLazy<ToxCore>.execute(

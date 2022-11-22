@@ -6,15 +6,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
-import android.widget.Toast
 import dagger.hilt.android.qualifiers.ApplicationContext
-import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceAddFriendArgs
-import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceGetOwnAddressArgs
-import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceGetOwnAddressResult
-import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceSendMessageArgs
-import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceAddFriendResult
-import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceResult
-import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceSendMessageResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import ru.fredboy.toxoid.clean.data.model.intent.args.*
+import ru.fredboy.toxoid.clean.data.model.intent.result.*
+import ru.fredboy.toxoid.clean.data.model.tox.ToxSaveData
 import ru.fredboy.toxoid.clean.domain.model.*
 import ru.fredboy.toxoid.tox.ToxService
 import javax.inject.Inject
@@ -37,85 +34,95 @@ class ToxServiceIntentApi @Inject constructor(
         }
     }
 
-    suspend fun getOwnAddress(): ToxAddress = suspendCoroutine { continuation ->
-        val resultReceiver = createResultReceiver(
+    suspend fun getOwnAddress(): ToxAddress = suspendCoroutineOnMain { continuation ->
+        val resultReceiver = createResultReceiver<ToxAddress, ToxServiceGetOwnAddressResult>(
             continuation = continuation,
-            resultType = ToxServiceGetOwnAddressResult::class.java
         ) { result -> result.address }
 
-        val intent = createIntent(ACTION_GET_OWN_ADDRESS) {
-            putParcelable(
-                ToxServiceGetOwnAddressArgs.PARCEL_KEY,
-                ToxServiceGetOwnAddressArgs(resultReceiver = resultReceiver)
-            )
-        }
+        val intent = createIntent(
+            action = ACTION_GET_OWN_ADDRESS,
+            args = ToxServiceGetOwnAddressArgs(resultReceiver = resultReceiver)
+        )
 
         context.startService(intent)
     }
 
-    suspend fun addFriend(friendRequest: FriendRequest) = suspendCoroutine<Unit> { continuation ->
-        val resultReceiver = createResultReceiver(
-            continuation = continuation,
-            resultType = ToxServiceAddFriendResult::class.java
-        ) { }
+    suspend fun addFriend(friendRequest: FriendRequest) =
+        suspendCoroutineOnMain<ToxSaveData> { continuation ->
+            val resultReceiver = createResultReceiver<ToxSaveData, ToxServiceAddFriendResult>(
+                continuation = continuation,
+            ) { result -> result.toxSaveData }
 
-        val intent = createIntent(ACTION_ADD_FRIEND) {
-            val args = ToxServiceAddFriendArgs(
-                friendAddressBytes = friendRequest.friendAddress.bytes,
-                messageBytes = friendRequest.message.toByteArray(),
-                resultReceiver = resultReceiver,
+            val intent = createIntent(
+                action = ACTION_ADD_FRIEND,
+                args = ToxServiceAddFriendArgs(
+                    friendAddressBytes = friendRequest.friendAddress.bytes,
+                    messageBytes = friendRequest.message.toByteArray(),
+                    resultReceiver = resultReceiver,
+                )
             )
 
-            putParcelable(ToxServiceAddFriendArgs.PARCEL_KEY, args)
+            context.startService(intent)
         }
-
-        context.startService(intent)
-    }
 
     suspend fun sendMessage(recipientPublicKey: ToxPublicKey, message: Message) =
-        suspendCoroutine<Unit> { continuation ->
-            val resultReceiver = createResultReceiver(
+        suspendCoroutineOnMain<Unit> { continuation ->
+            val resultReceiver = createResultReceiver<Unit, ToxServiceSendMessageResult>(
                 continuation = continuation,
-                resultType = ToxServiceSendMessageResult::class.java
-            ) { Toast.makeText(context, "Message sent", Toast.LENGTH_SHORT).show() }
+            ) {  }
 
-            val intent = createIntent(ACTION_SEND_MESSAGE) {
-                val args = ToxServiceSendMessageArgs(
+            val intent = createIntent(
+                action = ACTION_SEND_MESSAGE,
+                args = ToxServiceSendMessageArgs(
                     recipientPublicKeyBytes = recipientPublicKey.bytes,
                     messageBytes = message.text.toByteArray(),
                     timestamp = message.date.time,
                     resultReceiver = resultReceiver
                 )
-
-                putParcelable(ToxServiceSendMessageArgs.PARCEL_KEY, args)
-            }
+            )
 
             context.startService(intent)
         }
 
-    private fun createIntent(
-        action: String,
-        extrasBuilder: Bundle.() -> Unit,
-    ): Intent {
+    suspend fun resolveFriendNumber(friendNumber: Int): ToxPublicKey =
+        suspendCoroutineOnMain { continuation ->
+            val resultReceiver =
+                createResultReceiver<ToxPublicKey, ToxServiceResolveFriendNumberResult>(
+                    continuation = continuation,
+                ) { result -> result.friendPublicKey }
+
+            val intent = createIntent(
+                action = ACTION_RESOLVE_FRIEND_NUMBER,
+                args = ToxServiceResolveFriendNumberArgs(friendNumber, resultReceiver)
+            )
+
+            context.startService(intent)
+        }
+
+    private fun createIntent(action: String, args: ToxServiceArgs): Intent {
         return Intent(context, ToxService::class.java)
             .apply {
                 this.action = action
-                putExtras(Bundle().apply(extrasBuilder))
+                putExtras(Bundle().apply { putArgs(args) })
             }
     }
 
-    private fun <T, ResultClass : ToxServiceResult> createResultReceiver(
+    private inline fun <reified T, reified ResultClass : ToxServiceResult> createResultReceiver(
         continuation: Continuation<T>,
-        resultType: Class<ResultClass>,
-        callback: (ResultClass) -> T
+        crossinline callback: (ResultClass) -> T
     ): ResultReceiver {
         return object : ResultReceiver(Handler(context.mainLooper)) {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-                val result = resultData?.getParcelable(EXTRA_RESULT, resultType)
+                val result = resultData?.getParcelable(EXTRA_RESULT, ToxServiceResult::class.java)
 
-                val continuationResult = when {
-                    result == null -> Result.failure(Exception("No result fount: ${resultType.simpleName}"))
-                    result.error != null -> Result.failure(result.error as Throwable)
+                val notFoundException by lazy {
+                    Exception("No result found: ${ResultClass::class.java.simpleName}")
+                }
+
+                val continuationResult = when (result) {
+                    null -> Result.failure(notFoundException)
+                    is ToxServiceErrorResult -> Result.failure(result.error)
+                    !is ResultClass -> Result.failure(notFoundException)
                     else -> Result.success(callback(result))
                 }
 
@@ -123,4 +130,14 @@ class ToxServiceIntentApi @Inject constructor(
             }
         }
     }
+
+    private fun Bundle.putArgs(args: ToxServiceArgs) {
+        putParcelable(EXTRA_ARGUMENTS, args)
+    }
+
+    private suspend inline fun <reified T>
+            suspendCoroutineOnMain(crossinline block: (Continuation<T>) -> Unit) =
+        withContext<T>(Dispatchers.Main) {
+            suspendCoroutine { continuation -> block(continuation) }
+        }
 }

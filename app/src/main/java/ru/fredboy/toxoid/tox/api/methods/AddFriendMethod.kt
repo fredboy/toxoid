@@ -4,23 +4,30 @@ import im.tox.tox4j.core.ToxCore
 import im.tox.tox4j.core.ToxCoreConstants
 import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceAddFriendArgs
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceAddFriendResult
+import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceErrorResult
+import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceResult
+import ru.fredboy.toxoid.clean.data.model.tox.ToxSaveData
 
 class AddFriendMethod(
     args: ToxServiceAddFriendArgs,
-) : ToxServiceApiMethod<ToxServiceAddFriendArgs, ToxServiceAddFriendResult>(args) {
+) : ToxServiceApiMethod<ToxServiceAddFriendArgs>(args) {
 
-    override suspend fun execute(toxCore: ToxCore): ToxServiceAddFriendResult {
+    override suspend fun execute(toxCore: ToxCore): ToxServiceResult {
         try {
             toxCore.addFriend(
                 /* address = */ args.friendAddressBytes,
                 /* message = */ args.messageBytes.sliceFriendRequestMessage()
             )
         } catch (e: Exception) {
-            e.printStackTrace()
-            return ToxServiceAddFriendResult(error = e)
+            return ToxServiceErrorResult(e)
         }
 
-        return ToxServiceAddFriendResult()
+        return ToxServiceAddFriendResult(
+            toxSaveData = ToxSaveData(
+                ownAddressBytes = toxCore.address,
+                toxSaveData = toxCore.savedata
+            )
+        )
     }
 
     private fun ByteArray.sliceFriendRequestMessage(): ByteArray {

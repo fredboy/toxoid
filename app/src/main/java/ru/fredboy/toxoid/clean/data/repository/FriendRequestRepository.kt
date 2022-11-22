@@ -8,7 +8,8 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import ru.fredboy.toxoid.clean.data.mapper.FriendRequestMapper
 import ru.fredboy.toxoid.clean.data.mapper.ToxAddressMapper
-import ru.fredboy.toxoid.clean.data.model.FriendRequestData
+import ru.fredboy.toxoid.clean.data.model.tox.FriendRequestData
+import ru.fredboy.toxoid.clean.data.model.tox.ToxSaveData
 import ru.fredboy.toxoid.clean.data.source.intent.ToxServiceIntentApi
 import ru.fredboy.toxoid.clean.data.source.tox.CachedFriendRequestDataSource
 import ru.fredboy.toxoid.clean.data.source.tox.ToxEventDataSource
@@ -38,14 +39,12 @@ class FriendRequestRepository @Inject constructor(
         }
     }
 
-    suspend fun add(toxId: String, message: String) {
-        withIoDispatcher {
+    suspend fun add(toxId: String, message: String): ToxSaveData {
+        return withIoDispatcher {
             val request = createFriendRequest(toxId, message)
             val entity = friendRequestMapper.map(request)
             cachedFriendRequestDataSource.add(entity)
-            withContext(Dispatchers.Main) {
-                toxServiceIntentApi.addFriend(request)
-            }
+            toxServiceIntentApi.addFriend(request)
         }
     }
 

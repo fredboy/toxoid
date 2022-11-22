@@ -1,6 +1,6 @@
 package ru.fredboy.toxoid.clean.data.mapper
 
-import ru.fredboy.toxoid.clean.data.model.FriendRequestData
+import ru.fredboy.toxoid.clean.data.model.tox.FriendRequestData
 import ru.fredboy.toxoid.clean.data.model.room.FriendRequestEntity
 import ru.fredboy.toxoid.clean.domain.model.FriendRequest
 import ru.fredboy.toxoid.utils.bytesToHexString

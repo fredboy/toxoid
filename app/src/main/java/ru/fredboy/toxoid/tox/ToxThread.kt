@@ -2,16 +2,12 @@
 
 package ru.fredboy.toxoid.tox
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import dagger.hilt.android.qualifiers.ApplicationContext
 import im.tox.tox4j.core.ToxCore
 import im.tox.tox4j.core.enums.ToxConnection
 import im.tox.tox4j.core.exceptions.ToxBootstrapException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import ru.fredboy.toxoid.clean.data.mapper.ToxPublicKeyMapper
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
 import ru.fredboy.toxoid.utils.bytesToHexString
 import splitties.coroutines.SuspendLazy
@@ -21,9 +17,7 @@ import java.util.*
 import javax.inject.Inject
 
 class ToxThread @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val useCases: ToxServiceUseCases,
-    private val toxPublicKeyMapper: ToxPublicKeyMapper,
     private val toxCoreLazy: SuspendLazy<@JvmSuppressWildcards ToxCore>
 ) : Runnable {
 
@@ -82,25 +76,11 @@ class ToxThread @Inject constructor(
             useCases.saveToxData(bytesToHexString(toxCore.address), toxCore.savedata)
         }
 
-        CoroutineScope(Dispatchers.Main).launch {
-            useCases.getSelfConnectionStatusFlow()
-                .collect {
-                    Toast.makeText(
-                        context,
-                        "Connection status: ${it.name}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+        CoroutineScope(Dispatchers.Default).launch {
+            useCases.getContactUpdatesFlow().collect(useCases::updateContact)
         }
 
-        // FIXME: !!!
-        val eventListener = ToxEventListenerImpl(useCases) { i ->
-            bytesToHexString(
-                toxPublicKeyMapper.map(
-                    toxCore.getFriendPublicKey(i)
-                ).bytes
-            )
-        }
+        val eventListener = ToxEventListenerImpl(useCases)
         while (!Thread.currentThread().isInterrupted) {
             Thread.sleep(toxCore.iterationInterval().toLong())
             toxCore.iterate(eventListener, Any())

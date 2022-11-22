@@ -1,12 +1,9 @@
 package ru.fredboy.toxoid.clean.data.model.intent.result
 
 import kotlinx.parcelize.Parcelize
+import ru.fredboy.toxoid.clean.data.model.tox.ToxSaveData
 
 @Parcelize
 data class ToxServiceAddFriendResult(
-    override val error: Throwable? = null
-) : ToxServiceResult {
-    companion object {
-        const val PARCEL_KEY = "ToxServiceAddFriendResultParcel"
-    }
-}
+    val toxSaveData: ToxSaveData,
+) : ToxServiceResult

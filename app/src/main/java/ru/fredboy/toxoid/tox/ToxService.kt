@@ -42,7 +42,6 @@ class ToxService : Service() {
         when {
             action == ACTION_INIT_TOX_SERVICE -> onInitAction()
             action.startsWith(API_ACTION_PREFIX) -> toxApiHandler.handleAction(
-                action = action,
                 data = intent.extras ?: throw IllegalArgumentException("No extras found"),
             )
         }

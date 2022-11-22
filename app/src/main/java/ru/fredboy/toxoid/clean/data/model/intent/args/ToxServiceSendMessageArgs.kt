@@ -30,7 +30,4 @@ data class ToxServiceSendMessageArgs(
         return result
     }
 
-    companion object {
-        const val PARCEL_KEY = "ToxServiceSendMessageArgsParcel"
-    }
 }

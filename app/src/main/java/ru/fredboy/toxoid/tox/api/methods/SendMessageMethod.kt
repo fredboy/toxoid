@@ -6,18 +6,19 @@ import im.tox.tox4j.core.enums.ToxMessageType
 import im.tox.tox4j.core.exceptions.ToxFriendByPublicKeyException
 import im.tox.tox4j.core.exceptions.ToxFriendSendMessageException
 import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceSendMessageArgs
+import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceErrorResult
+import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceResult
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceSendMessageResult
 
 class SendMessageMethod(
     args: ToxServiceSendMessageArgs
-) : ToxServiceApiMethod<ToxServiceSendMessageArgs, ToxServiceSendMessageResult>(args) {
+) : ToxServiceApiMethod<ToxServiceSendMessageArgs>(args) {
 
-    override suspend fun execute(toxCore: ToxCore): ToxServiceSendMessageResult {
+    override suspend fun execute(toxCore: ToxCore): ToxServiceResult {
         val recipientNumber = try {
             toxCore.friendByPublicKey(args.recipientPublicKeyBytes)
         } catch (e: ToxFriendByPublicKeyException) {
-            e.printStackTrace()
-            return ToxServiceSendMessageResult(error = e)
+            return ToxServiceErrorResult(e)
         }
 
         val delta = (System.currentTimeMillis() - args.timestamp).toInt()
@@ -35,12 +36,11 @@ class SendMessageMethod(
                         /* message = */ messageChunkBytes
                     )
                 } catch (e: ToxFriendSendMessageException) {
-                    e.printStackTrace()
-                    return(ToxServiceSendMessageResult(error = e))
+                    return ToxServiceErrorResult(e)
                 }
             }
 
-        return ToxServiceSendMessageResult()
+        return ToxServiceSendMessageResult
     }
 
 }

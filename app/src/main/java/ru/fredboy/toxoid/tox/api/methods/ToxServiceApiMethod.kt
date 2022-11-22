@@ -5,14 +5,14 @@ import im.tox.tox4j.core.ToxCore
 import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceArgs
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceResult
 
-typealias ToxServiceGenericApiMethod = ToxServiceApiMethod<ToxServiceArgs, ToxServiceResult>
+typealias ToxServiceGenericApiMethod = ToxServiceApiMethod<ToxServiceArgs>
 
-abstract class ToxServiceApiMethod<Args : ToxServiceArgs, Result : ToxServiceResult>(
+abstract class ToxServiceApiMethod<Args : ToxServiceArgs>(
     protected val args: Args,
 ) {
 
     val resultReceiver: ResultReceiver get() = args.resultReceiver
 
-    abstract suspend fun execute(toxCore: ToxCore): Result
+    abstract suspend fun execute(toxCore: ToxCore): ToxServiceResult
 
 }

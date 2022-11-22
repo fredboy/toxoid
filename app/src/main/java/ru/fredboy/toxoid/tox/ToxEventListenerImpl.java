@@ -2,18 +2,14 @@ package ru.fredboy.toxoid.tox;
 
 import android.util.Log;
 
-import java.nio.charset.StandardCharsets;
-
 import androidx.annotation.NonNull;
 import im.tox.tox4j.core.callbacks.ToxCoreEventListener;
 import im.tox.tox4j.core.enums.ToxConnection;
 import im.tox.tox4j.core.enums.ToxFileControl;
 import im.tox.tox4j.core.enums.ToxMessageType;
 import im.tox.tox4j.core.enums.ToxUserStatus;
-import kotlinx.coroutines.Dispatchers;
-import ru.fredboy.toxoid.clean.data.model.FriendRequestData;
-
-import static kotlinx.coroutines.CoroutineScopeKt.CoroutineScope;
+import ru.fredboy.toxoid.clean.data.model.tox.FriendRequestData;
+import ru.fredboy.toxoid.clean.data.model.tox.NewFriendNameData;
 
 class ToxEventListenerImpl implements ToxCoreEventListener<Object> {
 
@@ -22,20 +18,8 @@ class ToxEventListenerImpl implements ToxCoreEventListener<Object> {
     @NonNull
     private final ToxServiceUseCases mUseCases;
 
-    @NonNull
-    private final IGetFriendIdByNumber mGetFriendIdByNumber;
-
-    @Deprecated
-            // TODO: 11/20/22 move to frind number usage in domain
-    interface IGetFriendIdByNumber {
-
-        String get(int number);
-    }
-
-    ToxEventListenerImpl(@NonNull final ToxServiceUseCases useCases,
-            @NonNull final IGetFriendIdByNumber getFriendIdByNumber) {
+    ToxEventListenerImpl(@NonNull final ToxServiceUseCases useCases) {
         mUseCases = useCases;
-        mGetFriendIdByNumber = getFriendIdByNumber;
     }
 
     @Override
@@ -95,7 +79,7 @@ class ToxEventListenerImpl implements ToxCoreEventListener<Object> {
     @Override
     public Object friendName(int friendNumber, byte[] name, Object state) {
         Log.d(TAG, "friendName: ");
-        mUseCases.setContactName(mGetFriendIdByNumber.get(friendNumber), new String(name, StandardCharsets.UTF_8));
+        mUseCases.flowNewContactName(new NewFriendNameData(friendNumber, name));
         return new Object();
     }
 
