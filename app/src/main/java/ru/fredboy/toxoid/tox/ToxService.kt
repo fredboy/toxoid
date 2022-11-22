@@ -62,11 +62,13 @@ class ToxService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        toxApiHandler.start()
         toxThread.startThread()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        toxApiHandler.interrupt()
         toxThread.interruptThread()
     }
 

@@ -3,103 +3,66 @@
 package ru.fredboy.toxoid.tox.api
 
 import android.os.Bundle
-import android.os.ResultReceiver
+import dagger.hilt.android.scopes.ServiceScoped
 import im.tox.tox4j.core.ToxCore
-import im.tox.tox4j.core.ToxCoreConstants
-import im.tox.tox4j.core.enums.ToxMessageType
-import im.tox.tox4j.core.exceptions.ToxFriendAddException
-import im.tox.tox4j.core.exceptions.ToxFriendByPublicKeyException
-import im.tox.tox4j.core.exceptions.ToxFriendSendMessageException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import ru.fredboy.toxoid.R
 import ru.fredboy.toxoid.clean.data.model.intent.*
+import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceAddFriendArgs
+import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceArgs
+import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceGetOwnAddressArgs
+import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceSendMessageArgs
 import ru.fredboy.toxoid.clean.data.source.intent.*
-import ru.fredboy.toxoid.clean.domain.model.ToxAddress
-import ru.fredboy.toxoid.utils.bytesToHexString
-import ru.fredboy.toxoid.utils.exhaustive
+import ru.fredboy.toxoid.tox.api.methods.*
 import splitties.coroutines.SuspendLazy
 import splitties.experimental.ExperimentalSplittiesApi
 import java.util.*
 import javax.inject.Inject
 
+@ServiceScoped
 class ToxApiHandler @Inject constructor(
-    private val useCases: ToxApiHandlerUseCases,
     private val toxCoreLazy: SuspendLazy<@JvmSuppressWildcards ToxCore>,
 ) {
 
-    fun handleAction(action: String, data: Bundle) {
-        CoroutineScope(Dispatchers.Main).launch {
-            val args: ToxServiceArgs = extractArgs(action, data)
+    private val methodQueue = ToxServiceApiMethodQueue()
+    private val executorThread: Thread
 
-            when (args) {
-                is ToxServiceSendMessageArgs -> sendMessage(args)
-                is ToxServiceAddFriendArgs -> sendFriendRequest(args)
-                is ToxServiceGetOwnAddressArgs -> getOwnToxAddress(args, data.getResultReceiver())
-            }.exhaustive()
+    init {
+        executorThread = object : Thread() {
+            override fun run() {
+                while (!this.isInterrupted) {
+                    try {
+                        val method = methodQueue.take()
+                        runBlocking {
+                            toxCoreLazy.execute { toxCore ->
+                                val result = method.execute(toxCore)
+                                method.resultReceiver.send(
+                                    R.id.result_code_okay,
+                                    Bundle().apply { putParcelable(EXTRA_RESULT, result) }
+                                )
+                            }
+                        }
+                    } catch (e: InterruptedException) {
+                        e.printStackTrace()
+                    }
+                }
+            }
         }
     }
 
-    private suspend fun sendMessage(args: ToxServiceSendMessageArgs) =
-        toxCoreLazy.execute { toxCore ->
-            val recipientNumber = try {
-                toxCore.friendByPublicKey(args.recipientPublicKeyBytes)
-            } catch (e: ToxFriendByPublicKeyException) {
-                e.printStackTrace()
-                return@execute
-            }
+    fun handleAction(action: String, data: Bundle) {
+        val args: ToxServiceArgs = extractArgs(action, data)
+        val method = getMethod(args)
+        methodQueue.add(method)
+    }
 
-            val delta = (System.currentTimeMillis() - args.timestamp).toInt()
+    fun start() {
+        executorThread.start()
+    }
 
-            args.messageBytes
-                .asSequence()
-                .chunked(ToxCoreConstants.MaxMessageLength())
-                .map { it.toByteArray() }
-                .forEach { messageChunkBytes ->
-                    try {
-                        toxCore.friendSendMessage(
-                            /* friendNumber = */ recipientNumber,
-                            /* messageType = */ ToxMessageType.NORMAL,
-                            /* timeDelta = */ delta,
-                            /* message = */ messageChunkBytes
-                        )
-                    } catch (e: ToxFriendSendMessageException) {
-                        e.printStackTrace()
-                        return@execute
-                    }
-                }
-        }
-
-    private suspend fun sendFriendRequest(args: ToxServiceAddFriendArgs) =
-        toxCoreLazy.execute { toxCore ->
-            try {
-                toxCore.addFriend(
-                    /* address = */ args.friendAddressBytes,
-                    /* message = */ args.messageBytes.sliceFriendRequestMessage()
-                )
-                useCases.saveToxData(bytesToHexString(toxCore.address), toxCore.savedata)
-            } catch (e: Exception) {
-                when (e) {
-                    is ToxFriendAddException, is IllegalArgumentException -> e.printStackTrace()
-                    else -> throw e
-                }
-            }
-        }
-
-    private suspend fun getOwnToxAddress(
-        args: ToxServiceGetOwnAddressArgs,
-        resultReceiver: ResultReceiver
-    ) =
-        toxCoreLazy.execute { toxCore ->
-            resultReceiver.send(R.id.result_code_okay, Bundle().apply {
-                putParcelable(
-                    ToxServiceGetOwnAddressResult.PARCEL_KEY, ToxServiceGetOwnAddressResult(
-                        ToxAddress(toxCore.address)
-                    )
-                )
-            })
-        }
+    fun interrupt() {
+        executorThread.interrupt()
+    }
 
     private fun extractArgs(action: String, data: Bundle): ToxServiceArgs {
         return when (action) {
@@ -119,26 +82,22 @@ class ToxApiHandler @Inject constructor(
         }
     }
 
-    private fun <T> Bundle.getArgs(parcelKey: String, type: Class<T>): T {
-        return getParcelable(parcelKey, type) ?: throw IllegalArgumentException()
+    private fun getMethod(args: ToxServiceArgs): ToxServiceGenericApiMethod {
+        @Suppress("UNCHECKED_CAST")
+        return when (args) {
+            is ToxServiceSendMessageArgs -> SendMessageMethod(args)
+            is ToxServiceAddFriendArgs -> AddFriendMethod(args)
+            is ToxServiceGetOwnAddressArgs -> GetOwnToxAddressMethod(args)
+        } as ToxServiceGenericApiMethod
     }
 
-    private fun Bundle.getResultReceiver(): ResultReceiver {
-        return getParcelable(EXTRA_CALLBACK, ResultReceiver::class.java)
-            ?: throw IllegalStateException("No result receiver")
+    private fun <T> Bundle.getArgs(parcelKey: String, type: Class<T>): T {
+        return getParcelable(parcelKey, type) ?: throw IllegalArgumentException()
     }
 
     private suspend fun <T> SuspendLazy<ToxCore>.execute(
         block: suspend (toxCore: ToxCore) -> T
     ): T {
         return block(this())
-    }
-
-    private fun ByteArray.sliceFriendRequestMessage(): ByteArray {
-        return if (size > ToxCoreConstants.MaxFriendRequestLength()) {
-            sliceArray(0 until ToxCoreConstants.MaxFriendRequestLength())
-        } else {
-            this
-        }
     }
 }

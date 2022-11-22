@@ -1,13 +1,14 @@
-package ru.fredboy.toxoid.clean.data.model.intent
+package ru.fredboy.toxoid.clean.data.model.intent.args
 
-import android.os.Parcelable
+import android.os.ResultReceiver
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ToxServiceAddFriendArgs(
     val friendAddressBytes: ByteArray,
     val messageBytes: ByteArray,
-) : ToxServiceArgs, Parcelable {
+    override val resultReceiver: ResultReceiver,
+) : ToxServiceArgs {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
