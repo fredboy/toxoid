@@ -37,9 +37,9 @@ class MessagesRepository @Inject constructor(
         }
     }
 
-    suspend fun send(chatId: String, text: String) {
+    suspend fun send(chatId: String, text: String): Message? {
         return withIoDispatcher {
-            val currentUser = localUsersRepository.getCurrent() ?: return@withIoDispatcher
+            val currentUser = localUsersRepository.getCurrent() ?: return@withIoDispatcher null
 
             val message = Message(
                 id = generateRandomStringId(),
@@ -50,6 +50,8 @@ class MessagesRepository @Inject constructor(
             )
 
             messageDataSource.sendMessage(messageMapper.map(message))
+
+            message
         }
     }
 

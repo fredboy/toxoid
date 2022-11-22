@@ -6,7 +6,6 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.scale
 import com.google.common.hash.Hashing
-import im.tox.tox4j.core.data.ToxPublicKey
 import ru.fredboy.toxoid.BuildConfig
 import ru.fredboy.toxoid.utils.ToxId
 import kotlin.math.abs

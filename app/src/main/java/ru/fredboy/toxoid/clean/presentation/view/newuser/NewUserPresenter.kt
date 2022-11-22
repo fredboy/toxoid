@@ -47,4 +47,8 @@ class NewUserPresenter @Inject constructor(
             })
     }
 
+    fun initToxService() {
+        useCases.initToxService()
+    }
+
 }

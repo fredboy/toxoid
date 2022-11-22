@@ -8,12 +8,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import ru.fredboy.toxoid.clean.data.model.FriendRequestData
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
-import ru.fredboy.toxoid.clean.domain.model.FriendRequest
 import ru.fredboy.toxoid.clean.domain.model.LocalUser
 import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.GetSavedBootstrapNodesUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.contact.SetContactNameUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.friendrequest.BroadcastNewFriendRequestUseCase
-import ru.fredboy.toxoid.clean.domain.usecase.friendrequest.GetOutgoingFriendRequestFlowUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.tox.*
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
 import ru.fredboy.toxoid.utils.ToxId
@@ -30,7 +28,6 @@ class ToxServiceUseCases @Inject constructor(
     private val loadToxDataUseCase: LoadToxDataUseCase,
     private val saveToxDataUseCase: SaveToxDataUseCase,
     private val getLatestSelfConnectionStatusUseCase: GetLatestSelfConnectionStatusUseCase,
-    private val getOutgoingFriendRequestFlowUseCase: GetOutgoingFriendRequestFlowUseCase,
     private val setContactNameUseCase: SetContactNameUseCase,
 ) {
 
@@ -72,10 +69,6 @@ class ToxServiceUseCases @Inject constructor(
 
     fun getLatestSelfConnectionStatus(): ToxConnection {
         return getLatestSelfConnectionStatusUseCase.execute()
-    }
-
-    fun getOutgoingFriendRequestFlow(): Flow<FriendRequest> {
-        return getOutgoingFriendRequestFlowUseCase.execute()
     }
 
     fun setContactName(contactId: String, newName: String) {

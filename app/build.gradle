@@ -136,6 +136,9 @@ dependencies {
     // gson
     implementation "com.google.code.gson:gson:${versions.gson}"
 
+    // splitties
+    implementation "com.louiscad.splitties:splitties-fun-pack-android-base:${versions.splitties}"
+
     // rxjava
 /*    implementation "io.reactivex.rxjava3:rxjava:${versions.rxjava}"
     implementation "io.reactivex.rxjava3:rxandroid:${versions.rxandroid}"*/

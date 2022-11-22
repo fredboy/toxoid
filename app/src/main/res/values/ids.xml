@@ -5,4 +5,8 @@
     <item name="item_bootstrap_node" type="id"/>
     <item name="foreground_service_notification_id" type="id"/>
     <item name="item_account_header" type="id"/>
+
+    // Intent api result codes
+    <item name="result_code_okay" type="id"/>
+    <item name="result_code_error" type="id"/>
 </resources>

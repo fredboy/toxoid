@@ -1,5 +1,6 @@
 package ru.fredboy.toxoid.clean.data.repository
 
+import im.tox.tox4j.crypto.ToxCryptoConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -51,7 +52,8 @@ class ContactsRepository @Inject constructor(
 
     suspend fun createForToxId(toxId: String): Contact {
         return withIoDispatcher {
-            val privKey = toxId.substring(0..63)
+            // 2 chars per byte
+            val privKey = toxId.substring(0 until ToxCryptoConstants.PublicKeyLength() * 2)
             val exists = contactDataSource.getById(privKey) != null
             if (exists) {
                 throw IllegalArgumentException("Contact with id $toxId already exists")

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSplittiesApi::class)
+
 package ru.fredboy.toxoid.tox
 
 import android.content.Context
@@ -7,13 +9,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import im.tox.tox4j.core.ToxCore
 import im.tox.tox4j.core.enums.ToxConnection
 import im.tox.tox4j.core.exceptions.ToxBootstrapException
-import im.tox.tox4j.core.options.ToxOptions
-import im.tox.tox4j.impl.jni.ToxCoreImpl
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.fredboy.toxoid.clean.data.mapper.ToxPublicKeyMapper
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
 import ru.fredboy.toxoid.utils.bytesToHexString
+import splitties.coroutines.SuspendLazy
+import splitties.experimental.ExperimentalSplittiesApi
 import java.lang.Runnable
 import java.util.*
 import javax.inject.Inject
@@ -21,7 +23,8 @@ import javax.inject.Inject
 class ToxThread @Inject constructor(
     @ApplicationContext private val context: Context,
     private val useCases: ToxServiceUseCases,
-    private val toxPublicKeyMapper: ToxPublicKeyMapper
+    private val toxPublicKeyMapper: ToxPublicKeyMapper,
+    private val toxCoreLazy: SuspendLazy<@JvmSuppressWildcards ToxCore>
 ) : Runnable {
 
     private val backgroundThread = Thread(this)
@@ -38,13 +41,7 @@ class ToxThread @Inject constructor(
     override fun run() {
 
         runBlocking {
-            val toxOptions = try {
-                tryLoadDataForCurrentUser()
-            } catch (e: Exception) {
-                useCases.createNewToxOptions()
-            }
-
-            toxCore = ToxCoreImpl(toxOptions)
+            toxCore = toxCoreLazy()
 
             useCases.setOwnToxId(toxCore.address)
             Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.address)}")
@@ -97,22 +94,12 @@ class ToxThread @Inject constructor(
                 }
         }
 
-        CoroutineScope(Dispatchers.Main).launch {
-            useCases.getOutgoingFriendRequestFlow()
-                .collect { friendRequest ->
-                    toxCore.addFriend(
-                        friendRequest.publicKey.value(),
-                        friendRequest.message.toByteArray()
-                    )
-                }
-        }
-
         // FIXME: !!!
         val eventListener = ToxEventListenerImpl(useCases) { i ->
             bytesToHexString(
                 toxPublicKeyMapper.map(
                     toxCore.getFriendPublicKey(i)
-                ).value()
+                ).bytes
             )
         }
         while (!Thread.currentThread().isInterrupted) {
@@ -123,19 +110,12 @@ class ToxThread @Inject constructor(
         Log.d(TAG, "dead")
     }
 
-    private suspend fun tryLoadDataForCurrentUser(): ToxOptions {
-        val currentUser = useCases.getCurrentUser()
-            ?: throw IllegalStateException("No current user")
-
-        return useCases.loadToxData(currentUser.id)
-    }
-
     private fun ToxCore.tryBootstrap(bootstrapNode: BootstrapNode): Boolean {
         return try {
             bootstrap(
                 bootstrapNode.host,
                 bootstrapNode.port,
-                bootstrapNode.publicKey.value()
+                bootstrapNode.publicKey.bytes
             )
             true
         } catch (e: ToxBootstrapException) {

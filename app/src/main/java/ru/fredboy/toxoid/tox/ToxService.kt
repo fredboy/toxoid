@@ -17,9 +17,9 @@ import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
+import ru.fredboy.toxoid.clean.data.source.intent.*
+import ru.fredboy.toxoid.tox.api.ToxApiHandler
 
 
 @AndroidEntryPoint
@@ -31,12 +31,29 @@ class ToxService : Service() {
     @Inject
     lateinit var toxThread: ToxThread
 
+    @Inject
+    lateinit var toxApiHandler: ToxApiHandler
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+
+        val action = intent?.action ?: throw IllegalArgumentException("No action found")
+
+        when {
+            action == ACTION_INIT_TOX_SERVICE -> onInitAction()
+            action.startsWith(API_ACTION_PREFIX) -> toxApiHandler.handleAction(
+                action = action,
+                data = intent.extras ?: throw IllegalArgumentException("No extras found"),
+            )
+        }
+
+        return START_STICKY
+    }
+
+    private fun onInitAction() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundOreo()
         }
-        return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? {

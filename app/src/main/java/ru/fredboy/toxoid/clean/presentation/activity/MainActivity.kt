@@ -18,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import ru.fredboy.toxoid.R
 import ru.fredboy.toxoid.clean.domain.model.Identicon
+import ru.fredboy.toxoid.clean.domain.usecase.tox.InitToxServiceUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetAllUsersUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.tox.InitializeWithMockDataUseCase
@@ -43,6 +44,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var currentUserUseCase: GetCurrentUserUseCase
 
+    @Inject
+    lateinit var initToxServiceUseCase: InitToxServiceUseCase
+
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
@@ -54,12 +58,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(welcomeIntent)
             initializeWithMockDataUseCase.setFirstLaunch()
         } else {
-            val toxServiceIntent = Intent(applicationContext, ToxService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(toxServiceIntent)
-            } else {
-                startService(toxServiceIntent)
-            }
+            initToxServiceUseCase.execute()
         }
 
         binding = ActivityMainBinding.inflate(layoutInflater)

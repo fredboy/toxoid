@@ -23,3 +23,7 @@ fun countryCodeToEmojiFlag(countryCode: String): String {
             String(charArray)
         }
 }
+
+inline fun <reified T> T.exhaustive(): T {
+    return this
+}
