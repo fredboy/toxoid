@@ -9,6 +9,7 @@ import im.tox.tox4j.core.enums.ToxFileControl;
 import im.tox.tox4j.core.enums.ToxMessageType;
 import im.tox.tox4j.core.enums.ToxUserStatus;
 import ru.fredboy.toxoid.clean.data.model.tox.FriendRequestData;
+import ru.fredboy.toxoid.clean.data.model.tox.IncomingMessageData;
 import ru.fredboy.toxoid.clean.data.model.tox.NewFriendNameData;
 
 class ToxEventListenerImpl implements ToxCoreEventListener<Object> {
@@ -73,6 +74,7 @@ class ToxEventListenerImpl implements ToxCoreEventListener<Object> {
     public Object friendMessage(int friendNumber, ToxMessageType messageType, int timeDelta,
             byte[] message, Object state) {
         Log.d(TAG, "friendMessage: ");
+        mUseCases.flowIncomingMessage(new IncomingMessageData(friendNumber, message));
         return new Object();
     }
 

@@ -1,40 +1,41 @@
 package ru.fredboy.toxoid.tox
 
 import im.tox.tox4j.core.enums.ToxConnection
-import im.tox.tox4j.core.options.ToxOptions
 import kotlinx.coroutines.flow.Flow
 import ru.fredboy.toxoid.clean.data.model.tox.FriendRequestData
+import ru.fredboy.toxoid.clean.data.model.tox.IncomingMessageData
 import ru.fredboy.toxoid.clean.data.model.tox.NewFriendNameData
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
 import ru.fredboy.toxoid.clean.domain.model.Contact
 import ru.fredboy.toxoid.clean.domain.model.LocalUser
+import ru.fredboy.toxoid.clean.domain.model.Message
 import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.GetSavedBootstrapNodesUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.contact.FlowNewContactNameUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.contact.GetContactUpdatesFlowUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.contact.UpdateContactUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.friendrequest.BroadcastNewFriendRequestUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.message.FlowIncomingMessageUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.message.GetIncomingMessageFlowUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.message.SaveMessageUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.tox.*
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
 import javax.inject.Inject
 
 class ToxServiceUseCases @Inject constructor(
-    private val createNewToxOptionsUseCase: CreateNewToxOptionsUseCase,
     private val broadcastNewFriendRequestUseCase: BroadcastNewFriendRequestUseCase,
     private val streamSelfConnectionStatusUseCase: StreamSelfConnectionStatusUseCase,
     private val getSelfConnectionStatusFlowUseCase: GetSelfConnectionStatusFlowUseCase,
     private val getSavedBootstrapNodesUseCase: GetSavedBootstrapNodesUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val loadToxDataUseCase: LoadToxDataUseCase,
     private val saveToxDataUseCase: SaveToxDataUseCase,
     private val getLatestSelfConnectionStatusUseCase: GetLatestSelfConnectionStatusUseCase,
     private val flowNewContactNameUseCase: FlowNewContactNameUseCase,
     private val getContactUpdatesFlowUseCase: GetContactUpdatesFlowUseCase,
     private val updateContactUseCase: UpdateContactUseCase,
+    private val getIncomingMessageFlowUseCase: GetIncomingMessageFlowUseCase,
+    private val saveMessageUseCase: SaveMessageUseCase,
+    private val flowIncomingMessageUseCase: FlowIncomingMessageUseCase,
 ) {
-
-    suspend fun createNewToxOptions(): ToxOptions {
-        return createNewToxOptionsUseCase.execute()
-    }
 
     fun broadcastNewFriendRequest(requestData: FriendRequestData) {
         broadcastNewFriendRequestUseCase.execute(requestData)
@@ -56,10 +57,6 @@ class ToxServiceUseCases @Inject constructor(
         return getCurrentUserUseCase.execute()
     }
 
-    suspend fun loadToxData(toxId: String): ToxOptions {
-        return loadToxDataUseCase.execute(toxId)
-    }
-
     suspend fun saveToxData(toxId: String, data: ByteArray) {
         saveToxDataUseCase.execute(toxId, data)
     }
@@ -78,6 +75,18 @@ class ToxServiceUseCases @Inject constructor(
 
     suspend fun updateContact(contact: Contact) {
         updateContactUseCase.execute(contact)
+    }
+
+    fun flowIncomingMessage(incomingMessageData: IncomingMessageData) {
+        flowIncomingMessageUseCase.execute(incomingMessageData)
+    }
+
+    fun getIncomingMessageFlow(): Flow<Message> {
+        return getIncomingMessageFlowUseCase.execute()
+    }
+
+    suspend fun saveMessage(message: Message) {
+        saveMessageUseCase.execute(message)
     }
 
 }

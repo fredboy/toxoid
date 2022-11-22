@@ -1,8 +1,12 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package ru.fredboy.toxoid.clean.presentation.view.chat
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import moxy.presenterScope
 import ru.fredboy.toxoid.clean.presentation.formatter.MessageFormatter
@@ -18,12 +22,16 @@ class ChatPresenter(
 
     override fun onFirstViewAttach() {
         presenterScope.launch {
-            useCases.getNewMessageFlow()
+            merge(useCases.getNewMessageFlow(), useCases.getIncomingMessageFlow())
                 .filter { it.chatId == args.chatId }
                 .map { messageFormatter.format(it, args.localUserId == it.senderId) }
                 .collect {
                     onNewMessage(it)
                 }
+        }
+
+        presenterScope.launch {
+            useCases
         }
 
         loadAndDisplayData()

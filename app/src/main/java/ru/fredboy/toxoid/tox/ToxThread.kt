@@ -80,6 +80,10 @@ class ToxThread @Inject constructor(
             useCases.getContactUpdatesFlow().collect(useCases::updateContact)
         }
 
+        CoroutineScope(Dispatchers.Default).launch {
+            useCases.getIncomingMessageFlow().collect(useCases::saveMessage)
+        }
+
         val eventListener = ToxEventListenerImpl(useCases)
         while (!Thread.currentThread().isInterrupted) {
             Thread.sleep(toxCore.iterationInterval().toLong())

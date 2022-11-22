@@ -9,12 +9,14 @@ class SendFriendRequestUseCase @Inject constructor(
     private val messagesRepository: MessagesRepository,
     private val chatsRepository: ChatsRepository,
     private val toxOptionsRepository: ToxOptionsRepository,
+    private val localUsersRepository: LocalUsersRepository,
 ) {
 
     suspend fun execute(toxId: String, message: String) {
+        val currentUser = localUsersRepository.getCurrent() ?: return
         val contact = contactsRepository.createForToxId(toxId)
         val chat = chatsRepository.createForContact(contact)
-        messagesRepository.send(chat.id, message)
+        messagesRepository.send(chat, message, currentUser)
         val savedata = friendRequestRepository.add(toxId, message)
         toxOptionsRepository.saveToxData(savedata)
     }

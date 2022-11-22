@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.fredboy.toxoid.clean.data.model.tox.FriendRequestData
+import ru.fredboy.toxoid.clean.data.model.tox.IncomingMessageData
 import ru.fredboy.toxoid.clean.data.model.tox.NewFriendNameData
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,6 +21,10 @@ class ToxEventDataSource @Inject constructor() {
 
     private val friendNameFlow = MutableSharedFlow<NewFriendNameData>(
         extraBufferCapacity = 10
+    )
+
+    private val incomingMessageFlow = MutableSharedFlow<IncomingMessageData>(
+        extraBufferCapacity = 100
     )
 
     fun newFriendRequest(requestData: FriendRequestData) {
@@ -48,6 +53,14 @@ class ToxEventDataSource @Inject constructor() {
 
     fun getNewFriendNameDataFlow(): Flow<NewFriendNameData> {
         return friendNameFlow
+    }
+
+    fun flowIncomingMessage(message: IncomingMessageData) {
+        incomingMessageFlow.tryEmit(message)
+    }
+
+    fun getIncominMessageFlow(): Flow<IncomingMessageData> {
+        return incomingMessageFlow
     }
 
 }
