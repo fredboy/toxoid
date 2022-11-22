@@ -19,7 +19,7 @@ class FriendRequestMapper @Inject constructor(
 
     fun map(request: FriendRequest): FriendRequestEntity {
         return FriendRequestEntity(
-            toxid = toxAddressMapper.toString(),
+            toxid = request.friendAddress.toString(),
             message = request.message
         )
     }
