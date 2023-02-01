@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.select.selectExtension
 import dagger.hilt.android.AndroidEntryPoint
 import moxy.ktx.moxyPresenter
 import ru.fredboy.toxoid.clean.presentation.model.BootstrapNodeVo
@@ -31,31 +32,40 @@ class BootstrapFragment : BaseMvpFragment(), BootstrapView {
     private val fastAdapter by lazy { FastAdapter.with(itemAdapter) }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentBootstrapBinding.inflate(inflater)
 
         with(binding) {
             bootstrapProgress.visible()
+
+            fastAdapter.selectExtension {
+                isSelectable = true
+                multiSelect = true
+                selectOnLongClick = false
+            }
+
             bootstrapNodesRecycler.adapter = fastAdapter
 
             bootstrapContinue.setOnClickListener {
+                presenter.onNodesSelected(getSelectedIndices())
                 findNavController().navigate(
-                    BootstrapFragmentDirections.actionBootstrapFragmentToNewUserFragment())
+                    BootstrapFragmentDirections.actionBootstrapFragmentToNewUserFragment()
+                )
             }
         }
 
         return binding.root
     }
 
+    private fun getSelectedIndices(): List<Int> {
+        return itemAdapter.adapterItems.mapIndexedNotNull { index, bootstrapNodeItem ->
+            index.takeIf { bootstrapNodeItem.isSelected }
+        }
+    }
+
     override fun setNodes(nodes: List<BootstrapNodeVo>) {
-        itemAdapter.add(nodes.mapIndexed { index, node ->
-            BootstrapNodeItem(node) { selected ->
-                presenter.onNodeSwitched(index, selected)
-            }
-        })
+        itemAdapter.add(nodes.map(::BootstrapNodeItem))
         binding.bootstrapProgress.gone()
     }
 

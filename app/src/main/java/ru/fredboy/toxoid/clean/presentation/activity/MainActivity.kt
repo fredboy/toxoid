@@ -19,6 +19,8 @@ import kotlinx.coroutines.*
 import ru.fredboy.toxoid.R
 import ru.fredboy.toxoid.clean.domain.model.Identicon
 import ru.fredboy.toxoid.clean.domain.model.ToxAddress
+import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.IsFirstLaunchUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.SetFirstLaunchUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.tox.InitToxServiceUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetAllUsersUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
@@ -37,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Inject
-    lateinit var initializeWithMockDataUseCase: InitializeWithMockDataUseCase
+    lateinit var isFirstLaunchUseCase: IsFirstLaunchUseCase
 
     @Inject
     lateinit var getAllUsersUseCase: GetAllUsersUseCase
@@ -54,10 +56,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (initializeWithMockDataUseCase.isFirstLaunch()) {
+        if (isFirstLaunchUseCase.execute()) {
             val welcomeIntent = Intent(applicationContext, WelcomeActivity::class.java)
             startActivity(welcomeIntent)
-            initializeWithMockDataUseCase.setFirstLaunch()
         } else {
             initToxServiceUseCase.execute()
         }
@@ -71,8 +72,12 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(setOf(R.id.navigation_main), binding.root)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        setupSlider()
         binding.slider.setupWithNavController(navController)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setupSlider()
     }
 
     private fun setupSlider() {

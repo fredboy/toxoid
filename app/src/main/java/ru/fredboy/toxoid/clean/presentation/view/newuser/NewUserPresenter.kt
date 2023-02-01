@@ -39,6 +39,7 @@ class NewUserPresenter @Inject constructor(
             useCases.addNewUser(user)
             useCases.setCurrentUserUseCase(stringId)
             viewState.setNewUser(user)
+            useCases.setFirstLaunch()
         }
     }
 

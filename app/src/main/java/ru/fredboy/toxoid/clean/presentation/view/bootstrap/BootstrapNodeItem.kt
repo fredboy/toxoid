@@ -2,15 +2,16 @@ package ru.fredboy.toxoid.clean.presentation.view.bootstrap
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.mikepenz.fastadapter.binding.ModelAbstractBindingItem
 import ru.fredboy.toxoid.R
 import ru.fredboy.toxoid.clean.presentation.model.BootstrapNodeVo
 import ru.fredboy.toxoid.databinding.ItemBootstrapNodeBinding
 
 class BootstrapNodeItem(
-    private val model: BootstrapNodeVo,
-    private val onSwitched: (Boolean) -> Unit,
-) : AbstractBindingItem<ItemBootstrapNodeBinding>() {
+    model: BootstrapNodeVo,
+) : ModelAbstractBindingItem<BootstrapNodeVo, ItemBootstrapNodeBinding>(
+    model = model
+) {
 
     override val type = R.id.item_bootstrap_node
 
@@ -19,6 +20,7 @@ class BootstrapNodeItem(
             bootstrapNodeCountry.text = model.flag
             bootstrapNodeSocket.text = model.socket
             bootstrapNodeMotd.text = model.motd
+            bootstrapNodeSwitch.isChecked = isSelected
 
             bootstrapNodeOnlineStatus.setImageResource(
                 if (model.status)
@@ -28,7 +30,7 @@ class BootstrapNodeItem(
             )
 
             bootstrapNodeSwitch.setOnClickListener {
-                onSwitched(bootstrapNodeSwitch.isChecked)
+                isSelected = bootstrapNodeSwitch.isChecked
             }
         }
     }

@@ -12,8 +12,8 @@ class RoomBootstrapNodeDataSource @Inject constructor(
         return mainDatabase.bootstrapNodeDao.getAll()
     }
 
-    override suspend fun add(bootstrapNodeEntity: BootstrapNodeEntity) {
-        mainDatabase.bootstrapNodeDao.insert(bootstrapNodeEntity)
+    override suspend fun add(bootstrapNodeEntities: List<BootstrapNodeEntity>) {
+        mainDatabase.bootstrapNodeDao.insert(*bootstrapNodeEntities.toTypedArray())
     }
 
     override suspend fun delete(publicKey: String) {

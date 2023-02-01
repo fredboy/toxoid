@@ -23,21 +23,17 @@ class BootstrapPresenter @Inject constructor(
         }
     }
 
-    fun onNodeSwitched(index: Int, selected: Boolean) {
-        nodeSelectionHandler.handleNodeSelection(index, selected)
+    fun onNodesSelected(selectedIndices: List<Int>) {
+        nodeSelectionHandler.handleNodeSelection(selectedIndices)
     }
 
     private inner class NodeSelectionHandler(
         private val bootstrapNodes: List<BootstrapNode>,
     ) {
 
-        fun handleNodeSelection(index: Int, selected: Boolean) {
+        fun handleNodeSelection(selectedIndices: List<Int>) {
             presenterScope.launch {
-                if (selected) {
-                    useCases.saveBootstrapNode(bootstrapNodes[index])
-                } else {
-                    useCases.deleteBootstrapNode(bootstrapNodes[index])
-                }
+                useCases.saveBootstrapNodes(bootstrapNodes.slice(selectedIndices))
             }
         }
 

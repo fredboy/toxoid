@@ -6,7 +6,7 @@ interface BootstrapNodeDataSource {
 
     suspend fun getAll(): List<BootstrapNodeEntity>
 
-    suspend fun add(bootstrapNodeEntity: BootstrapNodeEntity)
+    suspend fun add(bootstrapNodeEntities: List<BootstrapNodeEntity>)
 
     suspend fun delete(publicKey: String)
 

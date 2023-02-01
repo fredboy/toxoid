@@ -29,9 +29,9 @@ class BootstrapNodesRepository @Inject constructor(
         }
     }
 
-    suspend fun saveNode(bootstrapNode: BootstrapNode) {
+    suspend fun saveNodes(bootstrapNodes: List<BootstrapNode>) {
         withIoDispatcher {
-            bootstrapNodeDataSource.add(bootstrapNodeMapper.map(bootstrapNode))
+            bootstrapNodeDataSource.add(bootstrapNodes.map(bootstrapNodeMapper::map))
         }
     }
 

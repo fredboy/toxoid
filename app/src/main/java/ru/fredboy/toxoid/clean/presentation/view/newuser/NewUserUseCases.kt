@@ -2,6 +2,7 @@ package ru.fredboy.toxoid.clean.presentation.view.newuser
 
 import ru.fredboy.toxoid.clean.domain.model.LocalUser
 import ru.fredboy.toxoid.clean.domain.model.ToxAddress
+import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.SetFirstLaunchUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.tox.GetOwnToxAddressUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.user.AddNewUserUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.tox.InitToxServiceUseCase
@@ -13,6 +14,7 @@ class NewUserUseCases @Inject constructor(
     private val setCurrentUserUseCase: SetCurrentUserUseCase,
     private val initToxServiceUseCase: InitToxServiceUseCase,
     private val getOwnToxAddressUseCase: GetOwnToxAddressUseCase,
+    private val setFirstLaunchUseCase: SetFirstLaunchUseCase,
 ) {
 
     suspend fun getOwnToxAddress(): ToxAddress {
@@ -29,6 +31,10 @@ class NewUserUseCases @Inject constructor(
 
     fun initToxService() {
         initToxServiceUseCase.execute()
+    }
+
+    fun setFirstLaunch() {
+        setFirstLaunchUseCase.execute()
     }
 
 }
