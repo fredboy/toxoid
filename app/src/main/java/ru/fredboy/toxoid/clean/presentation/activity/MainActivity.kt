@@ -33,11 +33,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        const val RESULT_USER_CREATED = 101
-        const val KEY_LOCAL_USER = "key_local_user"
-    }
-
     @Inject
     lateinit var isFirstLaunchUseCase: IsFirstLaunchUseCase
 
@@ -59,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         if (isFirstLaunchUseCase.execute()) {
             val welcomeIntent = Intent(applicationContext, WelcomeActivity::class.java)
             startActivity(welcomeIntent)
+            finish()
         } else {
             initToxServiceUseCase.execute()
         }
