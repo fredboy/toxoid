@@ -7,12 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.widget.doOnTextChanged
 import androidx.viewbinding.ViewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import moxy.MvpBottomSheetDialogFragment
 import moxy.ktx.moxyPresenter
+import ru.fredboy.toxoid.R
 import ru.fredboy.toxoid.databinding.FragmentAddContactBinding
 import ru.fredboy.toxoid.utils.validateToxId
+import splitties.views.imageDrawable
+import splitties.views.imageResource
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -34,11 +38,19 @@ class AddContactFragment : MvpBottomSheetDialogFragment(), AddContactView {
         binding = FragmentAddContactBinding.inflate(inflater)
 
         with(binding) {
+            addContactPhoto.imageResource = R.drawable.ic_userpic_placeholder
+
             addContactAddButton.setOnClickListener {
                 validateToxIdAndSendRequest(
                     toxId = addContactToxidInput.text.toString()
                 )
             }
+
+            addContactToxidInput.doOnTextChanged { text, start, before, count ->
+                val toxId = text?.toString()?.takeIf { validateToxId(it) } ?: return@doOnTextChanged
+                addContactPhoto.setImageDrawable(presenter.createIdenticonDrawable(toxId))
+            }
+
             addContactToxidInput.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_GO) {
                     return@setOnEditorActionListener validateToxIdAndSendRequest(

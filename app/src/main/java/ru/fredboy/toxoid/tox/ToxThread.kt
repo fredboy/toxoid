@@ -96,9 +96,9 @@ class ToxThread @Inject constructor(
     private fun ToxCore.tryBootstrap(bootstrapNode: BootstrapNode): Boolean {
         return try {
             bootstrap(
-                bootstrapNode.host,
-                bootstrapNode.port,
-                bootstrapNode.publicKey.bytes
+                /* address = */ bootstrapNode.host,
+                /* port = */ bootstrapNode.port,
+                /* publicKey = */ bootstrapNode.publicKey.bytes
             )
             true
         } catch (e: ToxBootstrapException) {

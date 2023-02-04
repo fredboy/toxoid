@@ -18,16 +18,17 @@
     <string name="welcome">Welcome</string>
     <string name="hello">Hello!</string>
     <string name="tox_service_label">Tox Connection</string>
-    <string name="foreground_service_notification_channel_id">toxoid_foreground_service_channel</string>
+    <string name="foreground_service_notification_channel_id" translatable="false">toxoid_foreground_service_channel</string>
     <string name="foreground_service_notification_channel_name">Tox Service</string>
     <string name="foreground_service_notification_channel_description">Tox background connection</string>
     <string name="toxoid_is_running">Toxoid service is running</string>
-    <string name="foreground_service_notification_ticker">TXID</string>
+    <string name="foreground_service_notification_ticker" translatable="false">TXID</string>
     <string name="create_new_profile">Create new profile</string>
     <string name="user_name">User name</string>
     <string name="user_new_password">New password</string>
     <string name="your_new_toxid">Your new ToxID:</string>
     <string name="choose_bootstrap_nodes">Choose bootstrap nodes</string>
     <string name="add">ADD</string>
-    <string name="toxid_caps">TOXID</string>
+    <string name="toxid_caps" translatable="false">TOXID</string>
+    <string name="add_new_contact">Add new contact</string>
 </resources>

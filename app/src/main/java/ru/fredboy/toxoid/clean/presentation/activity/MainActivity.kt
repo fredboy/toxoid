@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                     ProfileDrawerItem().apply {
                         identifier = user.id.hashCode().toLong()
                         nameText = user.name
-                        iconDrawable = Identicon(ToxAddress(hexStringToByteArray(user.id)))
+                        iconDrawable = Identicon(ToxAddress(hexStringToByteArray(user.id)).toToxPublicKey())
                             .getDrawable(resources, 160)
                     }
                 }.toTypedArray()

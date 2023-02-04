@@ -11,7 +11,7 @@ import kotlin.math.abs
 
 
 data class Identicon(
-    val address: ToxAddress
+    val publicKey: ToxPublicKey
 ) {
     private val bitmap: Bitmap
 
@@ -20,7 +20,7 @@ data class Identicon(
 
     init {
         @Suppress("UnstableApiUsage")
-        val hash = Hashing.sha256().hashBytes(address.bytes).asBytes()
+        val hash = Hashing.sha256().hashBytes(publicKey.bytes).asBytes()
             .asSequence()
             .map { it.toUByte().toInt() }
             .toList()

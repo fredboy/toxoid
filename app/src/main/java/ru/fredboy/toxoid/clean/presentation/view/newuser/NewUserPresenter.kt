@@ -22,7 +22,7 @@ class NewUserPresenter @Inject constructor(
     private fun createIdenticon() {
         presenterScope.launch {
             val address = useCases.getOwnToxAddress()
-            val identicon = Identicon(address).getDrawable(context.resources, 160)
+            val identicon = Identicon(address.toToxPublicKey()).getDrawable(context.resources, 160)
             viewState.showUserPhoto(identicon)
         }
     }
