@@ -113,6 +113,14 @@ dependencies {
     // circleimage
     implementation "de.hdodenhof:circleimageview:${versions.circleimage}"
 
+    // camerax
+    implementation "androidx.camera:camera-camera2:${versions.camerax}"
+    implementation "androidx.camera:camera-lifecycle:${versions.camerax}"
+    implementation "androidx.camera:camera-view:${versions.camerax}"
+
+    // zxing
+    implementation "com.google.zxing:core:${versions.zxing}"
+
     // room
     implementation "androidx.room:room-runtime:${versions.room}"
     implementation "androidx.room:room-ktx:${versions.room}"

@@ -8,14 +8,16 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.core.widget.doOnTextChanged
-import androidx.viewbinding.ViewBinding
+import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import moxy.MvpBottomSheetDialogFragment
 import moxy.ktx.moxyPresenter
 import ru.fredboy.toxoid.R
+import ru.fredboy.toxoid.clean.presentation.view.qrscan.QrScanFragment
 import ru.fredboy.toxoid.databinding.FragmentAddContactBinding
+import ru.fredboy.toxoid.utils.getNavigationResult
 import ru.fredboy.toxoid.utils.validateToxId
-import splitties.views.imageDrawable
 import splitties.views.imageResource
 import javax.inject.Inject
 import javax.inject.Provider
@@ -39,6 +41,17 @@ class AddContactFragment : MvpBottomSheetDialogFragment(), AddContactView {
 
         with(binding) {
             addContactPhoto.imageResource = R.drawable.ic_userpic_placeholder
+
+            getNavigationResult<String>(QrScanFragment.SCAN_RESULT_KEY)
+                ?.observe(this@AddContactFragment as LifecycleOwner) {result ->
+                    addContactToxidInput.setText(result)
+                    findNavController().popBackStack()
+                }
+
+            addContactScanQrButton.setOnClickListener {
+                AddContactFragmentDirections.actionAddContactFragmentToQrScanFragment()
+                    .let { directions -> findNavController().navigate(directions) }
+            }
 
             addContactAddButton.setOnClickListener {
                 validateToxIdAndSendRequest(

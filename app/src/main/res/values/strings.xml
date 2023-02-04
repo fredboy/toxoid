@@ -31,4 +31,6 @@
     <string name="add">ADD</string>
     <string name="toxid_caps" translatable="false">TOXID</string>
     <string name="add_new_contact">Add new contact</string>
+    <string name="grant_camera">Please, grant camera access to scan QR code</string>
+    <string name="settings">Settings</string>
 </resources>

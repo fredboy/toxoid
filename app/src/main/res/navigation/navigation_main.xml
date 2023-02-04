@@ -36,5 +36,13 @@
     <dialog
         android:id="@+id/addContactFragment"
         android:name="ru.fredboy.toxoid.clean.presentation.view.addcontact.AddContactFragment"
-        android:label="AddContactFragment" />
+        android:label="AddContactFragment">
+        <action
+            android:id="@+id/action_addContactFragment_to_qrScanFragment"
+            app:destination="@id/qrScanFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/qrScanFragment"
+        android:name="ru.fredboy.toxoid.clean.presentation.view.qrscan.QrScanFragment"
+        android:label="QrScanFragment" />
 </navigation>
