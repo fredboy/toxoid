@@ -17,4 +17,7 @@ class WelcomeActivity : AppCompatActivity() {
         setContentView(binding.root)
     }
 
+    override fun onBackPressed() {
+    }
+
 }
