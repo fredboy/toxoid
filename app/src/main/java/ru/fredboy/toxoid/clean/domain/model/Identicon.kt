@@ -82,7 +82,7 @@ data class Identicon(
         return bitmap
     }
 
-    fun getDrawable(resources: Resources, scaleFactor: Int): BitmapDrawable {
+    fun getDrawable(resources: Resources, scaleFactor: Int = 180): BitmapDrawable {
         val size = bitmap.width * if (scaleFactor >= 1) scaleFactor else 1
         return BitmapDrawable(resources, bitmap.scale(size, size, false))
     }

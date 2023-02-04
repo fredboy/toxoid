@@ -20,6 +20,7 @@ class ChatListItem(
         binding.chatListItemPeerName.text = model.peerName
         binding.chatListItemLastMessage.text = model.lastMessageText
         binding.chatListItemLastMessageTime.text = model.lastMessageDateAndTime
+        binding.chatListItemPeerPhoto.setImageDrawable(model.contactDrawable)
     }
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemChatListBinding {

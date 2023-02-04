@@ -8,6 +8,7 @@ import ru.fredboy.toxoid.clean.domain.usecase.chat.GetChatByIdUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.contact.GetContactUpdatesFlowUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.friendrequest.GetNewFriendRequestFlowUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.message.GetNewMessageFlowUseCase
+import ru.fredboy.toxoid.clean.domain.usecase.tox.CreateIdenticonUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
 import javax.inject.Inject
 
@@ -19,6 +20,7 @@ class ChatListUseCases @Inject constructor(
     private val getNewFriendRequestFlowUseCase: GetNewFriendRequestFlowUseCase,
     private val getContactUpdatesFlowUseCase: GetContactUpdatesFlowUseCase,
     private val getChatByContactIdUseCase: GetChatByContactIdUseCase,
+    private val createIdenticonUseCase: CreateIdenticonUseCase,
 ) {
 
     suspend fun getAllChats(): List<Chat> {
@@ -47,6 +49,10 @@ class ChatListUseCases @Inject constructor(
 
     suspend fun getChatByContactId(contactId: String): Chat? {
         return getChatByContactIdUseCase.execute(contactId)
+    }
+
+    fun createIdenticon(toxId: String): Identicon {
+        return createIdenticonUseCase.execute(toxId)
     }
 
 }

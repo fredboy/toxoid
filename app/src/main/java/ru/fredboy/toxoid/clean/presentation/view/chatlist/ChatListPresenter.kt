@@ -28,7 +28,8 @@ class ChatListPresenter @Inject constructor(
     private fun handleNewMessage(message: Message) {
         presenterScope.launch {
             val chat = useCases.getChatById(message.chatId)
-                ?.let { chatListItemFormatter.format(it) } ?: return@launch
+                ?.let { chatListItemFormatter.format(it, useCases.createIdenticon(it.peer.id)) }
+                ?: return@launch
             viewState.insertItem(chat)
         }
     }
@@ -36,14 +37,20 @@ class ChatListPresenter @Inject constructor(
     private fun handleContactUpdate(contact: Contact) {
         presenterScope.launch {
             val chat = useCases.getChatByContactId(contact.id) ?: return@launch
-            val vo = chatListItemFormatter.format(chat.copy(peer = contact))
+            val vo = chatListItemFormatter
+                .format(chat.copy(peer = contact), useCases.createIdenticon(contact.id))
             viewState.insertItem(vo)
         }
     }
 
     private suspend fun loadAndDisplayData() {
         val chats = useCases.getAllChats()
-            .map(chatListItemFormatter::format)
+            .map { chat ->
+                chatListItemFormatter.format(
+                    chat = chat,
+                    identicon = useCases.createIdenticon(chat.peer.id)
+                )
+            }
 
         viewState.addChatItems(chats)
     }

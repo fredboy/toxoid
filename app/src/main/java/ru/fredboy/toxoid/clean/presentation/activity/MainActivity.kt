@@ -51,14 +51,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (isFirstLaunchUseCase.execute()) {
-            val welcomeIntent = Intent(applicationContext, WelcomeActivity::class.java)
-            startActivity(welcomeIntent)
-            finish()
-        } else {
-            initToxServiceUseCase.execute()
-        }
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -74,6 +66,16 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         setupSlider()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isFirstLaunchUseCase.execute()) {
+            val welcomeIntent = Intent(applicationContext, WelcomeActivity::class.java)
+            startActivity(welcomeIntent)
+        } else {
+            initToxServiceUseCase.execute()
+        }
     }
 
     private fun setupSlider() {

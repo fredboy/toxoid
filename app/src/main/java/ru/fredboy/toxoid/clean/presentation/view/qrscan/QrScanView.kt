@@ -8,13 +8,15 @@ import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
+typealias ImageAnalyzer = ImageAnalysis.Analyzer
+
 interface QrScanView : MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun bindCameraPreview(
         preview: Preview,
         cameraSelector: CameraSelector,
-        imageAnalyzer: ImageAnalysis.Analyzer
+        imageAnalyzer: ImageAnalyzer
     )
 
     @StateStrategyType(AddToEndSingleStrategy::class)
