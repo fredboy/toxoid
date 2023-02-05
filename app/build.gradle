@@ -57,15 +57,15 @@ android {
     }
 }
 
-task buildSbtPlugins(type: Exec) {
-    workingDir new File(project.projectDir.parentFile, 'jvm-sbt-plugins')
+task buildMacros(type: Exec) {
+    workingDir new File(project.projectDir.parentFile, 'jvm-macros')
     executable new File(project.projectDir.parentFile, 'sbt')
     args 'publishM2'
 }
 
-task buildMacros(type: Exec) {
-    buildSbtPlugins
-    workingDir new File(project.projectDir.parentFile, 'jvm-macros')
+task buildSbtPlugins(type: Exec) {
+    buildMacros
+    workingDir new File(project.projectDir.parentFile, 'jvm-sbt-plugins')
     executable new File(project.projectDir.parentFile, 'sbt')
     args 'publishM2'
 }
@@ -78,14 +78,14 @@ task buildToxCoreApi(type: Exec) {
 }
 
 task buildToxCoreC(type: Exec) {
-    dependsOn buildMacros, buildToxCoreApi
+    dependsOn buildSbtPlugins, buildMacros, buildToxCoreApi
     workingDir new File(project.projectDir.parentFile, 'jvm-toxcore-c')
     executable 'make'
     args 'publishM2'
 }
 
 task publishLocalToxDependencies() {
-    dependsOn buildToxCoreC
+    dependsOn buildMacros, buildSbtPlugins, buildToxCoreApi, buildToxCoreC
 }
 
 configurations {
