@@ -18,24 +18,28 @@ android {
         versionCode setup.versionCode
         versionName setup.versionName
 
+        multiDexEnabled true
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
+            minifyEnabled true
             applicationIdSuffix ".debug"
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
     buildFeatures {
         viewBinding true
@@ -51,6 +55,37 @@ android {
     kapt {
         generateStubs = true
     }
+}
+
+task buildSbtPlugins(type: Exec) {
+    workingDir new File(project.projectDir.parentFile, 'jvm-sbt-plugins')
+    executable new File(project.projectDir.parentFile, 'sbt')
+    args 'publishM2'
+}
+
+task buildMacros(type: Exec) {
+    buildSbtPlugins
+    workingDir new File(project.projectDir.parentFile, 'jvm-macros')
+    executable new File(project.projectDir.parentFile, 'sbt')
+    args 'publishM2'
+}
+
+task buildToxCoreApi(type: Exec) {
+    dependsOn buildSbtPlugins
+    workingDir new File(project.projectDir.parentFile, 'jvm-toxcore-api')
+    executable new File(project.projectDir.parentFile, 'sbt')
+    args 'publishM2'
+}
+
+task buildToxCoreC(type: Exec) {
+    dependsOn buildMacros, buildToxCoreApi
+    workingDir new File(project.projectDir.parentFile, 'jvm-toxcore-c')
+    executable 'make'
+    args 'publishM2'
+}
+
+task publishLocalToxDependencies() {
+    dependsOn buildToxCoreC
 }
 
 configurations {
@@ -93,6 +128,8 @@ dependencies {
     implementation "androidx.annotation:annotation:${versions.annotation}"
     implementation "androidx.constraintlayout:constraintlayout:${versions.constraintLayout}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
+    implementation "androidx.multidex:multidex:2.0.1"
+
 //    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serialization}"
 
 
@@ -156,8 +193,8 @@ dependencies {
     fixArchPath "org.toktok:tox4j-c_armv7a-linux-androideabi:0.2.13"
     fixArchPath "org.toktok:tox4j-c_x86_64-linux-android:0.2.13"
     fixArchPath "org.toktok:tox4j-c_i686-linux-android:0.2.13"
-    implementation "org.toktok:tox4j-c_2.11:0.2.3"
-    api "org.toktok:tox4j-api_2.11:0.2.3"
+    implementation "org.toktok:tox4j-c_2.12:0.2.3"
+    api "org.toktok:tox4j-api_2.12:0.2.3"
 
     // wtf
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'

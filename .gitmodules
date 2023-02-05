@@ -1,0 +1,12 @@
+[submodule "jvm-sbt-plugins"]
+	path = jvm-sbt-plugins
+	url = https://github.com/fredboy/jvm-sbt-plugins.git
+[submodule "jvm-toxcore-api"]
+	path = jvm-toxcore-api
+	url = https://github.com/fredboy/jvm-toxcore-api.git
+[submodule "jvm-macros"]
+	path = jvm-macros
+	url = https://github.com/fredboy/jvm-macros.git
+[submodule "jvm-toxcore-c"]
+	path = jvm-toxcore-c
+	url = https://github.com/fredboy/jvm-toxcore-c
