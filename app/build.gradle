@@ -33,11 +33,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '1.8'
     }
     buildFeatures {
         viewBinding true
@@ -119,6 +119,8 @@ tasks.named("preBuild") {
 }
 
 dependencies {
+    implementation project(path: ':tox4a')
+
     implementation "androidx.core:core-ktx:${versions.ktx}"
     implementation "androidx.appcompat:appcompat:${versions.appcompat}"
     implementation "com.google.android.material:material:${versions.material}"
@@ -126,7 +128,7 @@ dependencies {
     implementation "androidx.annotation:annotation:${versions.annotation}"
     implementation "androidx.constraintlayout:constraintlayout:${versions.constraintLayout}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
-    implementation "androidx.multidex:multidex:2.0.1"
+    implementation "androidx.multidex:multidex:${versions.multidex}"
 
 //    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serialization}"
 

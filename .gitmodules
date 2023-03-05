@@ -1,12 +1,12 @@
-[submodule "jvm-sbt-plugins"]
-	path = jvm-sbt-plugins
-	url = https://github.com/fredboy/jvm-sbt-plugins.git
-[submodule "jvm-toxcore-api"]
-	path = jvm-toxcore-api
-	url = https://github.com/fredboy/jvm-toxcore-api.git
-[submodule "jvm-macros"]
-	path = jvm-macros
-	url = https://github.com/fredboy/jvm-macros.git
-[submodule "jvm-toxcore-c"]
-	path = jvm-toxcore-c
-	url = https://github.com/fredboy/jvm-toxcore-c
+[submodule "tox4a/src/main/cpp/thirdparty/c-toxcore"]
+	path = tox4a/src/main/cpp/thirdparty/c-toxcore
+	url = https://github.com/TokTok/c-toxcore.git
+[submodule "tox4a/src/main/cpp/thirdparty/libsodium"]
+	path = tox4a/src/main/cpp/thirdparty/libsodium
+	url = https://github.com/jedisct1/libsodium.git
+[submodule "tox4a/src/main/cpp/thirdparty/libvpx"]
+	path = tox4a/src/main/cpp/thirdparty/libvpx
+	url = https://github.com/webmproject/libvpx.git
+[submodule "tox4a/src/main/cpp/thirdparty/opus"]
+	path = tox4a/src/main/cpp/thirdparty/opus
+	url = https://github.com/xiph/opus.git

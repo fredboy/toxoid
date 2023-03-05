@@ -8,7 +8,7 @@ buildscript {
 
         setup = [
                 compileSdk: 33,
-                minSdk    : 21,
+                minSdk    : 19,
                 targetSdk : 32
         ]
 
@@ -36,7 +36,9 @@ buildscript {
                 gson                : '2.9.1',
                 splitties           : '3.0.0',
                 camerax             : '1.2.1',
-                zxing               : '3.5.1'
+                zxing               : '3.5.1',
+                multidex            : '2.0.1',
+                protobuf_kotlin     : '3.21.12',
         ]
     }
 

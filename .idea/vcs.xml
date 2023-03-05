@@ -2,15 +2,10 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jvm-macros" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jvm-sbt-plugins" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jvm-toxcore-api" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jvm-toxcore-c" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jvm-toxcore-c/_git/libsodium" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jvm-toxcore-c/_git/libvpx" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jvm-toxcore-c/_git/opus" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jvm-toxcore-c/_git/protobuf" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jvm-toxcore-c/_git/toxcore" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jvm-toxcore-c/_git/toxcore/third_party/cmp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tox4a/src/main/cpp/thirdparty/c-toxcore" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tox4a/src/main/cpp/thirdparty/c-toxcore/third_party/cmp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tox4a/src/main/cpp/thirdparty/libsodium" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tox4a/src/main/cpp/thirdparty/libvpx" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tox4a/src/main/cpp/thirdparty/opus" vcs="Git" />
   </component>
 </project>
