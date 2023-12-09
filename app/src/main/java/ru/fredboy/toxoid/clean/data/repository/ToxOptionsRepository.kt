@@ -1,6 +1,6 @@
 package ru.fredboy.toxoid.clean.data.repository
 
-import im.tox.tox4j.core.options.ToxOptions
+import ru.fredboy.tox4a.api.core.options.ToxOptions
 import ru.fredboy.toxoid.clean.data.model.tox.ToxSaveData
 import ru.fredboy.toxoid.clean.data.source.tox.ToxOptionsDataSource
 import ru.fredboy.toxoid.utils.bytesToHexString

@@ -4,8 +4,8 @@ package ru.fredboy.toxoid.tox.api
 
 import android.os.Bundle
 import dagger.hilt.android.scopes.ServiceScoped
-import im.tox.tox4j.core.ToxCore
 import kotlinx.coroutines.runBlocking
+import ru.fredboy.tox4a.api.core.ToxCore
 import ru.fredboy.toxoid.R
 import ru.fredboy.toxoid.clean.data.model.intent.*
 import ru.fredboy.toxoid.clean.data.model.intent.args.*

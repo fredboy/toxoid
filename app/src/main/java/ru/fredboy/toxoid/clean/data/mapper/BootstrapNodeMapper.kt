@@ -13,7 +13,7 @@ class BootstrapNodeMapper @Inject constructor(
         return BootstrapNode(
             publicKey = toxPublicKeyMapper.map(requireNotNull(dto.publicKey)),
             host = requireNotNull(dto.ipv4),
-            port = requireNotNull(dto.port),
+            port = requireNotNull(dto.port?.toUShort()),
             location = requireNotNull(dto.location),
             status = dto.statusTcp,
             motd = dto.motd
@@ -24,7 +24,7 @@ class BootstrapNodeMapper @Inject constructor(
         return BootstrapNode(
             publicKey = toxPublicKeyMapper.map(entity.id),
             host = entity.host,
-            port = entity.port,
+            port = entity.port.toUShort(),
             location = entity.location,
         )
     }
@@ -33,7 +33,7 @@ class BootstrapNodeMapper @Inject constructor(
         return BootstrapNodeEntity(
             id = node.publicKey.toString(),
             host = node.host,
-            port = node.port,
+            port = node.port.toInt(),
             location = node.location,
         )
     }

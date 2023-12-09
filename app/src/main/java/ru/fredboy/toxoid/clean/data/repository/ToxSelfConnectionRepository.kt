@@ -1,9 +1,9 @@
 package ru.fredboy.toxoid.clean.data.repository
 
-import im.tox.tox4j.core.enums.ToxConnection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
+import ru.fredboy.tox4a.api.core.data.enums.ToxConnection
 import ru.fredboy.toxoid.clean.data.source.tox.ToxEventDataSource
 import javax.inject.Inject
 

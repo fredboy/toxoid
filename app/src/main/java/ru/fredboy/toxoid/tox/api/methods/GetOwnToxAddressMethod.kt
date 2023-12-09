@@ -1,6 +1,6 @@
 package ru.fredboy.toxoid.tox.api.methods
 
-import im.tox.tox4j.core.ToxCore
+import ru.fredboy.tox4a.api.core.ToxCore
 import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceGetOwnAddressArgs
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceGetOwnAddressResult
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceResult
@@ -12,7 +12,7 @@ class GetOwnToxAddressMethod(
 
     override suspend fun execute(toxCore: ToxCore): ToxServiceResult {
         return ToxServiceGetOwnAddressResult(
-            address = ToxAddress(toxCore.address)
+            address = ToxAddress(toxCore.getAddress().value)
         )
     }
 

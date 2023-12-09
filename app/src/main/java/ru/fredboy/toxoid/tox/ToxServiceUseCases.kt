@@ -1,7 +1,7 @@
 package ru.fredboy.toxoid.tox
 
-import im.tox.tox4j.core.enums.ToxConnection
 import kotlinx.coroutines.flow.Flow
+import ru.fredboy.tox4a.api.core.data.enums.ToxConnection
 import ru.fredboy.toxoid.clean.data.model.tox.FriendRequestData
 import ru.fredboy.toxoid.clean.data.model.tox.IncomingMessageData
 import ru.fredboy.toxoid.clean.data.model.tox.NewFriendNameData

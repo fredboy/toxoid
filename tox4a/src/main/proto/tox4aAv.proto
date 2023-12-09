@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package ru.fredboy.tox4a.av.proto;
+package ru.fredboy.tox4a.impl.av.proto;
 
 option java_multiple_files = true;
 

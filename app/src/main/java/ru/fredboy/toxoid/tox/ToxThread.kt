@@ -3,11 +3,11 @@
 package ru.fredboy.toxoid.tox
 
 import android.util.Log
-import im.tox.tox4j.core.ToxCore
-import im.tox.tox4j.core.enums.ToxConnection
-import im.tox.tox4j.core.exceptions.ToxBootstrapException
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import ru.fredboy.tox4a.api.core.ToxCore
+import ru.fredboy.tox4a.api.core.callbacks.CompositeToxCoreEventListener
+import ru.fredboy.tox4a.api.core.data.ToxPublicKey
+import ru.fredboy.tox4a.api.core.data.enums.ToxConnection
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
 import ru.fredboy.toxoid.utils.bytesToHexString
 import splitties.coroutines.SuspendLazy
@@ -37,7 +37,7 @@ class ToxThread @Inject constructor(
         runBlocking {
             toxCore = toxCoreLazy()
 
-            Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.address)}")
+            Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.getAddress().value)}")
 
 
             val bootstrapNodesIterator = useCases.getSavedBootstrapNodes().iterator()
@@ -73,7 +73,7 @@ class ToxThread @Inject constructor(
                 }
             }, 0L, BOOTSTRAP_TIMEOUT)
 
-            useCases.saveToxData(bytesToHexString(toxCore.address), toxCore.savedata)
+            useCases.saveToxData(bytesToHexString(toxCore.getAddress().value), toxCore.getSaveData())
         }
 
         CoroutineScope(Dispatchers.Default).launch {
@@ -84,10 +84,10 @@ class ToxThread @Inject constructor(
             useCases.getIncomingMessageFlow().collect(useCases::saveMessage)
         }
 
-        val eventListener = ToxEventListenerImpl(useCases)
+        val eventListener = CompositeToxCoreEventListener()
         while (!Thread.currentThread().isInterrupted) {
-            Thread.sleep(toxCore.iterationInterval().toLong())
-            toxCore.iterate(eventListener, Any())
+            Thread.sleep(toxCore.getIterationInterval().toLong())
+            toxCore.iterate(eventListener)
         }
 
         Log.d(TAG, "dead")
@@ -98,10 +98,10 @@ class ToxThread @Inject constructor(
             bootstrap(
                 /* address = */ bootstrapNode.host,
                 /* port = */ bootstrapNode.port,
-                /* publicKey = */ bootstrapNode.publicKey.bytes
+                /* publicKey = */ ToxPublicKey(bootstrapNode.publicKey.bytes)
             )
             true
-        } catch (e: ToxBootstrapException) {
+        } catch (e: /*ToxBootstrap*/Exception) {
             false
         }
     }

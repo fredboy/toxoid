@@ -1,13 +1,13 @@
 package ru.fredboy.toxoid.clean.domain.model
 
-import im.tox.tox4j.crypto.ToxCryptoConstants
+import ru.fredboy.tox4a.api.crypto.ToxCryptoConstants
 import ru.fredboy.toxoid.utils.bytesToHexString
 import java.io.Serializable
 
 data class ToxPublicKey(val bytes: ByteArray) : Serializable {
 
     init {
-        assert(bytes.size == ToxCryptoConstants.PublicKeyLength())
+        assert(bytes.size == ToxCryptoConstants.publicKeyLength)
     }
 
 
@@ -19,9 +19,7 @@ data class ToxPublicKey(val bytes: ByteArray) : Serializable {
 
         other as ToxPublicKey
 
-        if (!bytes.contentEquals(other.bytes)) return false
-
-        return true
+        return bytes.contentEquals(other.bytes)
     }
 
     override fun hashCode(): Int {

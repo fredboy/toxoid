@@ -82,7 +82,7 @@ class QrScanFragment : MvpAppCompatDialogFragment(), QrScanView {
         cameraSelector: CameraSelector,
         imageAnalyzer: ImageAnalysis.Analyzer
     ) {
-        binding.qrScanPermissionDeniedView.gone()
+/*        binding.qrScanPermissionDeniedView.gone()
 
         preview.setSurfaceProvider(binding.qrScanCameraPreview.surfaceProvider)
 
@@ -94,10 +94,10 @@ class QrScanFragment : MvpAppCompatDialogFragment(), QrScanView {
             .apply { setAnalyzer(requireContext().mainExecutor, imageAnalyzer) }
 
         cameraProvider.bindToLifecycle(
-            /* lifecycleOwner = */ this as LifecycleOwner,
-            /* cameraSelector = */ cameraSelector,
-            /* ...useCases = */ imageAnalysis, preview
-        )
+            *//* lifecycleOwner = *//* this as LifecycleOwner,
+            *//* cameraSelector = *//* cameraSelector,
+            *//* ...useCases = *//* imageAnalysis, preview
+        )*/
     }
 
     override fun showPermissionDeniedView() {
