@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="1.7">
-      <module name="Toxoid.app" target="17" />
-      <module name="Toxoid.jvm-toxcore-api" target="17" />
-      <module name="Toxoid.jvm-toxcore-c" target="17" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="17" />
   </component>
 </project>
