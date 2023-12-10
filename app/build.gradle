@@ -92,7 +92,8 @@ tasks.named("preBuild") {
 }
 
 dependencies {
-    implementation project(path: ':tox4a')
+    api project(path: ':jvm-toxcore-api')
+    implementation project(path: ':jvm-toxcore-c')
 
     implementation "androidx.core:core-ktx:${versions.ktx}"
     implementation "androidx.appcompat:appcompat:${versions.appcompat}"

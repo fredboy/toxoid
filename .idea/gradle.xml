@@ -10,8 +10,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/tox4a" />
-            <option value="$PROJECT_DIR$/tox4a-api" />
+            <option value="$PROJECT_DIR$/jvm-toxcore-api" />
+            <option value="$PROJECT_DIR$/jvm-toxcore-c" />
+            <option value="$PROJECT_DIR$/lib" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

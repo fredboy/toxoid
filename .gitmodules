@@ -1,0 +1,15 @@
+[submodule "tox4j/src/main/cpp/thirdparty/c-toxcore"]
+	path = tox4j/src/main/cpp/thirdparty/c-toxcore
+	url = https://github.com/TokTok/c-toxcore.git
+[submodule "tox4j/src/main/cpp/thirdparty/libsodium"]
+	path = tox4j/src/main/cpp/thirdparty/libsodium
+	url = https://github.com/jedisct1/libsodium.git
+[submodule "tox4j/src/main/cpp/thirdparty/libvpx"]
+	path = tox4j/src/main/cpp/thirdparty/libvpx
+	url = https://github.com/webmproject/libvpx.git
+[submodule "tox4j/src/main/cpp/thirdparty/opus"]
+	path = tox4j/src/main/cpp/thirdparty/opus
+	url = https://github.com/xiph/opus.git
+[submodule "tox4j/src/main/cpp/thirdparty/protobuf"]
+	path = tox4j/src/main/cpp/thirdparty/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
