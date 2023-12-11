@@ -3,13 +3,14 @@
 package ru.fredboy.toxoid.tox
 
 import android.util.Log
+import im.tox.core.network.Port
 import im.tox.tox4j.core.ToxCore
+import im.tox.tox4j.core.data.ToxPublicKey
 import im.tox.tox4j.core.enums.ToxConnection
-import im.tox.tox4j.core.exceptions.ToxBootstrapException
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
 import ru.fredboy.toxoid.utils.bytesToHexString
+import ru.fredboy.toxoid.utils.rightOrThrow
 import splitties.coroutines.SuspendLazy
 import splitties.experimental.ExperimentalSplittiesApi
 import java.lang.Runnable
@@ -37,7 +38,7 @@ class ToxThread @Inject constructor(
         runBlocking {
             toxCore = toxCoreLazy()
 
-            Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.address)}")
+            Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.address.value)}")
 
 
             val bootstrapNodesIterator = useCases.getSavedBootstrapNodes().iterator()
@@ -73,7 +74,7 @@ class ToxThread @Inject constructor(
                 }
             }, 0L, BOOTSTRAP_TIMEOUT)
 
-            useCases.saveToxData(bytesToHexString(toxCore.address), toxCore.savedata)
+            useCases.saveToxData(bytesToHexString(toxCore.address.value), toxCore.saveData)
         }
 
         CoroutineScope(Dispatchers.Default).launch {
@@ -84,9 +85,9 @@ class ToxThread @Inject constructor(
             useCases.getIncomingMessageFlow().collect(useCases::saveMessage)
         }
 
-        val eventListener = ToxEventListenerImpl(useCases)
+        val eventListener = object : ToxEventListenerImpl(useCases) { }
         while (!Thread.currentThread().isInterrupted) {
-            Thread.sleep(toxCore.iterationInterval().toLong())
+            Thread.sleep(toxCore.iterationInterval.toLong())
             toxCore.iterate(eventListener, Any())
         }
 
@@ -96,12 +97,12 @@ class ToxThread @Inject constructor(
     private fun ToxCore.tryBootstrap(bootstrapNode: BootstrapNode): Boolean {
         return try {
             bootstrap(
-                /* address = */ bootstrapNode.host,
-                /* port = */ bootstrapNode.port,
-                /* publicKey = */ bootstrapNode.publicKey.bytes
+                address = bootstrapNode.host,
+                port = Port.unsafeFromInt(bootstrapNode.port.toInt()),
+                publicKey = ToxPublicKey.fromValue(bootstrapNode.publicKey.bytes).rightOrThrow()
             )
             true
-        } catch (e: ToxBootstrapException) {
+        } catch (e: /*ToxBootstrap*/Exception) {
             false
         }
     }

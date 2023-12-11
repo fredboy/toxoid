@@ -5,8 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.scale
-import com.google.common.hash.Hashing
 import ru.fredboy.toxoid.BuildConfig
+import java.security.MessageDigest
 import kotlin.math.abs
 
 
@@ -20,7 +20,8 @@ data class Identicon(
 
     init {
         @Suppress("UnstableApiUsage")
-        val hash = Hashing.sha256().hashBytes(publicKey.bytes).asBytes()
+
+        val hash = SHA_256_DIGEST.digest(publicKey.bytes)
             .asSequence()
             .map { it.toUByte().toInt() }
             .toList()
@@ -92,5 +93,7 @@ data class Identicon(
         private const val IDENTICON_ROWS = 5
         private const val COLORS = 2
         private const val ACTIVE_COLS = 3
+
+        private val SHA_256_DIGEST = MessageDigest.getInstance("SHA-256")
     }
 }

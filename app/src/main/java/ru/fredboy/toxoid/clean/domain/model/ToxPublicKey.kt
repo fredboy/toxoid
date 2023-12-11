@@ -7,7 +7,7 @@ import java.io.Serializable
 data class ToxPublicKey(val bytes: ByteArray) : Serializable {
 
     init {
-        assert(bytes.size == ToxCryptoConstants.PublicKeyLength())
+        assert(bytes.size == ToxCryptoConstants.publicKeyLength)
     }
 
 
@@ -19,9 +19,7 @@ data class ToxPublicKey(val bytes: ByteArray) : Serializable {
 
         other as ToxPublicKey
 
-        if (!bytes.contentEquals(other.bytes)) return false
-
-        return true
+        return bytes.contentEquals(other.bytes)
     }
 
     override fun hashCode(): Int {

@@ -6,17 +6,20 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
     id 'kotlinx-serialization'
     id 'kotlin-parcelize'
+    id 'com.google.devtools.ksp'
 }
 
 android {
+    namespace "ru.fredboy.toxoid"
+
     compileSdk setup.compileSdk
 
     defaultConfig {
         applicationId "ru.fredboy.toxoid"
         minSdk setup.minSdk
         targetSdk setup.targetSdk
-        versionCode setup.versionCode
-        versionName setup.versionName
+        versionCode release.versionCode
+        versionName release.versionName
 
         multiDexEnabled true
 
@@ -25,24 +28,23 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
             applicationIdSuffix ".debug"
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '1.8'
     }
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
     packagingOptions {
         exclude "rootdoc.txt"
@@ -55,37 +57,6 @@ android {
     kapt {
         generateStubs = true
     }
-}
-
-task buildMacros(type: Exec) {
-    workingDir new File(project.projectDir.parentFile, 'jvm-macros')
-    executable new File(project.projectDir.parentFile, 'sbt')
-    args 'publishM2'
-}
-
-task buildSbtPlugins(type: Exec) {
-    buildMacros
-    workingDir new File(project.projectDir.parentFile, 'jvm-sbt-plugins')
-    executable new File(project.projectDir.parentFile, 'sbt')
-    args 'publishM2'
-}
-
-task buildToxCoreApi(type: Exec) {
-    dependsOn buildSbtPlugins
-    workingDir new File(project.projectDir.parentFile, 'jvm-toxcore-api')
-    executable new File(project.projectDir.parentFile, 'sbt')
-    args 'publishM2'
-}
-
-task buildToxCoreC(type: Exec) {
-    dependsOn buildSbtPlugins, buildMacros, buildToxCoreApi
-    workingDir new File(project.projectDir.parentFile, 'jvm-toxcore-c')
-    executable 'make'
-    args 'publishM2'
-}
-
-task publishLocalToxDependencies() {
-    dependsOn buildMacros, buildSbtPlugins, buildToxCoreApi, buildToxCoreC
 }
 
 configurations {
@@ -121,6 +92,9 @@ tasks.named("preBuild") {
 }
 
 dependencies {
+    api project(path: ':jvm-toxcore-api')
+    implementation project(path: ':jvm-toxcore-c')
+
     implementation "androidx.core:core-ktx:${versions.ktx}"
     implementation "androidx.appcompat:appcompat:${versions.appcompat}"
     implementation "com.google.android.material:material:${versions.material}"
@@ -128,7 +102,7 @@ dependencies {
     implementation "androidx.annotation:annotation:${versions.annotation}"
     implementation "androidx.constraintlayout:constraintlayout:${versions.constraintLayout}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
-    implementation "androidx.multidex:multidex:2.0.1"
+    implementation "androidx.multidex:multidex:${versions.multidex}"
 
 //    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serialization}"
 
@@ -189,15 +163,15 @@ dependencies {
     implementation "io.reactivex.rxjava3:rxandroid:${versions.rxandroid}"*/
 
     // tox
-    fixArchPath "org.toktok:tox4j-c_aarch64-linux-android:0.2.13"
+/*    fixArchPath "org.toktok:tox4j-c_aarch64-linux-android:0.2.13"
     fixArchPath "org.toktok:tox4j-c_armv7a-linux-androideabi:0.2.13"
     fixArchPath "org.toktok:tox4j-c_x86_64-linux-android:0.2.13"
     fixArchPath "org.toktok:tox4j-c_i686-linux-android:0.2.13"
     implementation "org.toktok:tox4j-c_2.12:0.2.3"
-    api "org.toktok:tox4j-api_2.12:0.2.3"
+    api "org.toktok:tox4j-api_2.12:0.2.3"*/
 
     // wtf
-    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+//    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

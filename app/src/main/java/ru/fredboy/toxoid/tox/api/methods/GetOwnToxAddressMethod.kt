@@ -12,7 +12,7 @@ class GetOwnToxAddressMethod(
 
     override suspend fun execute(toxCore: ToxCore): ToxServiceResult {
         return ToxServiceGetOwnAddressResult(
-            address = ToxAddress(toxCore.address)
+            address = ToxAddress(toxCore.address.value)
         )
     }
 

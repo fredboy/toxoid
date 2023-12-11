@@ -77,7 +77,7 @@ class ContactsRepository @Inject constructor(
     suspend fun createForToxId(toxId: String): Contact {
         return withIoDispatcher {
             // 2 chars per byte
-            val privKey = toxId.substring(0 until ToxCryptoConstants.PublicKeyLength() * 2)
+            val privKey = toxId.substring(0 ..< ToxCryptoConstants.publicKeyLength * 2)
             val exists = contactDataSource.getById(privKey) != null
             if (exists) {
                 throw IllegalArgumentException("Contact with id $toxId already exists")

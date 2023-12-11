@@ -8,3 +8,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Toxoid"
 include ':app'
+include ':jvm-toxcore-api'
+include ':jvm-toxcore-c'

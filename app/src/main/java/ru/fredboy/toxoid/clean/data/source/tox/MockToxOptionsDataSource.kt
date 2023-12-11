@@ -2,8 +2,6 @@ package ru.fredboy.toxoid.clean.data.source.tox
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import im.tox.tox4j.core.ToxCoreConstants
-import im.tox.tox4j.core.options.ProxyOptions
 import im.tox.tox4j.core.options.SaveDataOptions
 import im.tox.tox4j.core.options.ToxOptions
 import java.io.*
@@ -40,21 +38,15 @@ class MockToxOptionsDataSource @Inject constructor(
 
     private fun createOptions(savedData: ByteArray?): ToxOptions {
         val saveDataOptions = if (savedData == null) {
-            SaveDataOptions.`None$`.`MODULE$`
+            SaveDataOptions.None
         } else {
             SaveDataOptions.ToxSave(savedData)
         }
 
         return ToxOptions(
-            false,
-            true,
-            true,
-            ProxyOptions.`None$`.`MODULE$`,
-            ToxCoreConstants.DefaultStartPort(),
-            ToxCoreConstants.DefaultEndPort(),
-            ToxCoreConstants.DefaultTcpPort(),
-            saveDataOptions,
-            false
+            ipv6Enabled = false,
+            saveData = saveDataOptions,
+            fatalErrors = false
         )
     }
 

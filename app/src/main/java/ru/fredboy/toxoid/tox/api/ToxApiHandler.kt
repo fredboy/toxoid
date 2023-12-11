@@ -7,13 +7,11 @@ import dagger.hilt.android.scopes.ServiceScoped
 import im.tox.tox4j.core.ToxCore
 import kotlinx.coroutines.runBlocking
 import ru.fredboy.toxoid.R
-import ru.fredboy.toxoid.clean.data.model.intent.*
 import ru.fredboy.toxoid.clean.data.model.intent.args.*
 import ru.fredboy.toxoid.clean.data.source.intent.*
 import ru.fredboy.toxoid.tox.api.methods.*
 import splitties.coroutines.SuspendLazy
 import splitties.experimental.ExperimentalSplittiesApi
-import java.util.*
 import javax.inject.Inject
 
 @ServiceScoped
@@ -71,8 +69,11 @@ class ToxApiHandler @Inject constructor(
     }
 
     private fun Bundle.getArgs(): ToxServiceArgs {
-        return getParcelable(EXTRA_ARGUMENTS, ToxServiceArgs::class.java)
+        return this.getParcelable(EXTRA_ARGUMENTS)
             ?: throw IllegalStateException()
+
+//        return getParcelable(EXTRA_ARGUMENTS, ToxServiceArgs::class.java)
+//            ?: throw IllegalStateException()
     }
 
     private suspend fun <T> SuspendLazy<ToxCore>.execute(

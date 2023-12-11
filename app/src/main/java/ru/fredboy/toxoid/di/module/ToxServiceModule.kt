@@ -42,9 +42,7 @@ class ToxServiceProvidersModule {
     fun provideToxCore(
         toxOptions: SuspendLazy<@JvmSuppressWildcards ToxOptions>
     ): SuspendLazy<ToxCore> {
-        return GlobalScope.suspendLazy {
-            ToxCoreImpl(toxOptions())
-        }
+        return GlobalScope.suspendLazy { ToxCoreImpl(toxOptions()) }
     }
 
 }

@@ -1,7 +1,6 @@
 package ru.fredboy.toxoid.clean.presentation.activity
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -20,13 +19,10 @@ import ru.fredboy.toxoid.R
 import ru.fredboy.toxoid.clean.domain.model.Identicon
 import ru.fredboy.toxoid.clean.domain.model.ToxAddress
 import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.IsFirstLaunchUseCase
-import ru.fredboy.toxoid.clean.domain.usecase.bootstrap.SetFirstLaunchUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.tox.InitToxServiceUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetAllUsersUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
-import ru.fredboy.toxoid.clean.domain.usecase.tox.InitializeWithMockDataUseCase
 import ru.fredboy.toxoid.databinding.ActivityMainBinding
-import ru.fredboy.toxoid.tox.ToxService
 import ru.fredboy.toxoid.utils.hexStringToByteArray
 import javax.inject.Inject
 
