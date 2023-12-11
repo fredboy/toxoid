@@ -1,7 +1,7 @@
 package ru.fredboy.toxoid.tox.api.methods
 
 import android.os.ResultReceiver
-import ru.fredboy.tox4a.api.core.ToxCore
+import im.tox.tox4j.core.ToxCore
 import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceArgs
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceResult
 

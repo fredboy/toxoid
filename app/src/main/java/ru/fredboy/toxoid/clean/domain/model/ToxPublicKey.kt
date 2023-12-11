@@ -1,6 +1,6 @@
 package ru.fredboy.toxoid.clean.domain.model
 
-import ru.fredboy.tox4a.api.crypto.ToxCryptoConstants
+import im.tox.tox4j.crypto.ToxCryptoConstants
 import ru.fredboy.toxoid.utils.bytesToHexString
 import java.io.Serializable
 

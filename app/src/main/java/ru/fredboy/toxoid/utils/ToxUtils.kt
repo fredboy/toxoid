@@ -1,6 +1,6 @@
 package ru.fredboy.toxoid.utils
 
-import ru.fredboy.tox4a.api.core.ToxCoreConstants
+import im.tox.tox4j.core.ToxCoreConstants
 
 private const val TOXID_LENGTH = ToxCoreConstants.addressSize * 2
 private const val TOX_PUB_KEY_STRING_LENGTH = ToxCoreConstants.publicKeySize * 2

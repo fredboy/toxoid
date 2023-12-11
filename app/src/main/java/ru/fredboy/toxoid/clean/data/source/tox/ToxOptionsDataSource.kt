@@ -1,6 +1,6 @@
 package ru.fredboy.toxoid.clean.data.source.tox
 
-import ru.fredboy.tox4a.api.core.options.ToxOptions
+import im.tox.tox4j.core.options.ToxOptions
 
 interface ToxOptionsDataSource {
 

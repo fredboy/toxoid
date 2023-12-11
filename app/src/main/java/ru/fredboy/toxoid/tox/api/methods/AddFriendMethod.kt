@@ -1,14 +1,15 @@
 package ru.fredboy.toxoid.tox.api.methods
 
-import ru.fredboy.tox4a.api.core.ToxCore
-import ru.fredboy.tox4a.api.core.ToxCoreConstants
-import ru.fredboy.tox4a.api.core.data.ToxFriendAddress
-import ru.fredboy.tox4a.api.core.data.ToxFriendRequestMessage
+import im.tox.tox4j.core.ToxCore
+import im.tox.tox4j.core.ToxCoreConstants
+import im.tox.tox4j.core.data.ToxFriendAddress
+import im.tox.tox4j.core.data.ToxFriendRequestMessage
 import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceAddFriendArgs
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceAddFriendResult
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceErrorResult
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceResult
 import ru.fredboy.toxoid.clean.data.model.tox.ToxSaveData
+import ru.fredboy.toxoid.utils.rightOrThrow
 
 class AddFriendMethod(
     args: ToxServiceAddFriendArgs,
@@ -17,8 +18,8 @@ class AddFriendMethod(
     override suspend fun execute(toxCore: ToxCore): ToxServiceResult {
         try {
             toxCore.addFriend(
-                /* address = */ ToxFriendAddress(args.friendAddressBytes),
-                /* message = */ ToxFriendRequestMessage(args.messageBytes.sliceFriendRequestMessage())
+                /* address = */ ToxFriendAddress.fromValue(args.friendAddressBytes).rightOrThrow(),
+                /* message = */ ToxFriendRequestMessage.fromValue(args.messageBytes.sliceFriendRequestMessage()).rightOrThrow()
             )
         } catch (e: Exception) {
             return ToxServiceErrorResult(e)
@@ -26,8 +27,8 @@ class AddFriendMethod(
 
         return ToxServiceAddFriendResult(
             toxSaveData = ToxSaveData(
-                ownAddressBytes = toxCore.getAddress().value,
-                toxSaveData = toxCore.getSaveData()
+                ownAddressBytes = toxCore.address.value,
+                toxSaveData = toxCore.saveData
             )
         )
     }

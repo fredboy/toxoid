@@ -2,8 +2,8 @@ package ru.fredboy.toxoid.clean.data.source.tox
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import ru.fredboy.tox4a.api.core.options.SaveDataOptions
-import ru.fredboy.tox4a.api.core.options.ToxOptions
+import im.tox.tox4j.core.options.SaveDataOptions
+import im.tox.tox4j.core.options.ToxOptions
 import java.io.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -38,9 +38,9 @@ class MockToxOptionsDataSource @Inject constructor(
 
     private fun createOptions(savedData: ByteArray?): ToxOptions {
         val saveDataOptions = if (savedData == null) {
-            SaveDataOptions.NONE
+            SaveDataOptions.None
         } else {
-            SaveDataOptions.toxSave(savedData)
+            SaveDataOptions.ToxSave(savedData)
         }
 
         return ToxOptions(

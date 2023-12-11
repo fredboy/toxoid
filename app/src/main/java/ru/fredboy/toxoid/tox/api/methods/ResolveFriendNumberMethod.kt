@@ -1,7 +1,7 @@
 package ru.fredboy.toxoid.tox.api.methods
 
-import ru.fredboy.tox4a.api.core.ToxCore
-import ru.fredboy.tox4a.api.core.data.ToxFriendNumber
+import im.tox.tox4j.core.ToxCore
+import im.tox.tox4j.core.data.ToxFriendNumber
 import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceResolveFriendNumberArgs
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceErrorResult
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceResolveFriendNumberResult
@@ -15,7 +15,7 @@ class ResolveFriendNumberMethod(
 ) {
     override suspend fun execute(toxCore: ToxCore): ToxServiceResult {
         return try {
-            val friendPublicKeyBytes = toxCore.getFriendPublicKey(ToxFriendNumber(args.friendNumber))
+            val friendPublicKeyBytes = toxCore.getFriendPublicKey(ToxFriendNumber.unsafeFromInt(args.friendNumber))
             ToxServiceResolveFriendNumberResult(ToxPublicKey(friendPublicKeyBytes.value))
         } catch (e: Exception) {
             ToxServiceErrorResult(e)

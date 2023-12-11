@@ -1,14 +1,15 @@
 package ru.fredboy.toxoid.tox.api.methods
 
-import ru.fredboy.tox4a.api.core.ToxCore
-import ru.fredboy.tox4a.api.core.ToxCoreConstants
-import ru.fredboy.tox4a.api.core.data.ToxFriendMessage
-import ru.fredboy.tox4a.api.core.data.ToxPublicKey
-import ru.fredboy.tox4a.api.core.data.enums.ToxMessageType
+import im.tox.tox4j.core.ToxCore
+import im.tox.tox4j.core.ToxCoreConstants
+import im.tox.tox4j.core.data.ToxFriendMessage
+import im.tox.tox4j.core.data.ToxPublicKey
+import im.tox.tox4j.core.enums.ToxMessageType
 import ru.fredboy.toxoid.clean.data.model.intent.args.ToxServiceSendMessageArgs
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceErrorResult
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceResult
 import ru.fredboy.toxoid.clean.data.model.intent.result.ToxServiceSendMessageResult
+import ru.fredboy.toxoid.utils.rightOrThrow
 
 class SendMessageMethod(
     args: ToxServiceSendMessageArgs
@@ -16,8 +17,10 @@ class SendMessageMethod(
 
     override suspend fun execute(toxCore: ToxCore): ToxServiceResult {
         val recipientNumber = try {
-            toxCore.friendByPublicKey(ToxPublicKey(args.recipientPublicKeyBytes))
-        } catch (e: /*ToxFriendByPublicKey*/Exception) {
+            toxCore.friendByPublicKey(
+                ToxPublicKey.fromValue(args.recipientPublicKeyBytes).rightOrThrow()
+            )
+        } catch (e: Exception) {
             return ToxServiceErrorResult(e)
         }
 
@@ -33,9 +36,9 @@ class SendMessageMethod(
                         friendNumber = recipientNumber,
                         messageType = ToxMessageType.NORMAL,
                         timeDelta = delta,
-                        message = ToxFriendMessage(messageChunkBytes)
+                        message = ToxFriendMessage.fromValue(messageChunkBytes).rightOrThrow()
                     )
-                } catch (e: /*ToxFriendSendMessage*/Exception) {
+                } catch (e: Exception) {
                     return ToxServiceErrorResult(e)
                 }
             }

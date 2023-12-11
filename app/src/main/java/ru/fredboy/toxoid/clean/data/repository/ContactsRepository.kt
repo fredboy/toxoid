@@ -1,10 +1,10 @@
 package ru.fredboy.toxoid.clean.data.repository
 
+import im.tox.tox4j.crypto.ToxCryptoConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import ru.fredboy.tox4a.api.crypto.ToxCryptoConstants
 import ru.fredboy.toxoid.clean.data.mapper.ContactMapper
 import ru.fredboy.toxoid.clean.data.model.tox.NewFriendNameData
 import ru.fredboy.toxoid.clean.data.source.contact.ContactDataSource
@@ -77,7 +77,7 @@ class ContactsRepository @Inject constructor(
     suspend fun createForToxId(toxId: String): Contact {
         return withIoDispatcher {
             // 2 chars per byte
-            val privKey = toxId.substring(0 until ToxCryptoConstants.publicKeyLength * 2)
+            val privKey = toxId.substring(0 ..< ToxCryptoConstants.publicKeyLength * 2)
             val exists = contactDataSource.getById(privKey) != null
             if (exists) {
                 throw IllegalArgumentException("Contact with id $toxId already exists")

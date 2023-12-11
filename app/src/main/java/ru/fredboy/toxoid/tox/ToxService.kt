@@ -16,7 +16,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.fredboy.toxoid.clean.data.source.intent.*
 import ru.fredboy.toxoid.tox.api.ToxApiHandler
@@ -108,6 +107,7 @@ class ToxService : Service() {
         subscribeOnSelfConnectionStatus(notificationManager)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun subscribeOnSelfConnectionStatus(notificationManager: NotificationManager) {
         CoroutineScope(Dispatchers.Main).launch {
             useCases.getSelfConnectionStatusFlow()

@@ -3,13 +3,14 @@
 package ru.fredboy.toxoid.tox
 
 import android.util.Log
+import im.tox.core.network.Port
+import im.tox.tox4j.core.ToxCore
+import im.tox.tox4j.core.data.ToxPublicKey
+import im.tox.tox4j.core.enums.ToxConnection
 import kotlinx.coroutines.*
-import ru.fredboy.tox4a.api.core.ToxCore
-import ru.fredboy.tox4a.api.core.callbacks.CompositeToxCoreEventListener
-import ru.fredboy.tox4a.api.core.data.ToxPublicKey
-import ru.fredboy.tox4a.api.core.data.enums.ToxConnection
 import ru.fredboy.toxoid.clean.domain.model.BootstrapNode
 import ru.fredboy.toxoid.utils.bytesToHexString
+import ru.fredboy.toxoid.utils.rightOrThrow
 import splitties.coroutines.SuspendLazy
 import splitties.experimental.ExperimentalSplittiesApi
 import java.lang.Runnable
@@ -37,7 +38,7 @@ class ToxThread @Inject constructor(
         runBlocking {
             toxCore = toxCoreLazy()
 
-            Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.getAddress().value)}")
+            Log.d(TAG, "ToxCore initialized: ${bytesToHexString(toxCore.address.value)}")
 
 
             val bootstrapNodesIterator = useCases.getSavedBootstrapNodes().iterator()
@@ -73,7 +74,7 @@ class ToxThread @Inject constructor(
                 }
             }, 0L, BOOTSTRAP_TIMEOUT)
 
-            useCases.saveToxData(bytesToHexString(toxCore.getAddress().value), toxCore.getSaveData())
+            useCases.saveToxData(bytesToHexString(toxCore.address.value), toxCore.saveData)
         }
 
         CoroutineScope(Dispatchers.Default).launch {
@@ -84,10 +85,10 @@ class ToxThread @Inject constructor(
             useCases.getIncomingMessageFlow().collect(useCases::saveMessage)
         }
 
-        val eventListener = CompositeToxCoreEventListener()
+        val eventListener = object : ToxEventListenerImpl(useCases) { }
         while (!Thread.currentThread().isInterrupted) {
-            Thread.sleep(toxCore.getIterationInterval().toLong())
-            toxCore.iterate(eventListener)
+            Thread.sleep(toxCore.iterationInterval.toLong())
+            toxCore.iterate(eventListener, Any())
         }
 
         Log.d(TAG, "dead")
@@ -97,8 +98,8 @@ class ToxThread @Inject constructor(
         return try {
             bootstrap(
                 address = bootstrapNode.host,
-                port = bootstrapNode.port,
-                publicKey = ToxPublicKey(bootstrapNode.publicKey.bytes)
+                port = Port.unsafeFromInt(bootstrapNode.port.toInt()),
+                publicKey = ToxPublicKey.fromValue(bootstrapNode.publicKey.bytes).rightOrThrow()
             )
             true
         } catch (e: /*ToxBootstrap*/Exception) {
