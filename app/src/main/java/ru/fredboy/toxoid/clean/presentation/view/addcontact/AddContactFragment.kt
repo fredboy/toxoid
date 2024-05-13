@@ -25,7 +25,9 @@ import javax.inject.Provider
 @AndroidEntryPoint
 class AddContactFragment : MvpBottomSheetDialogFragment(), AddContactView {
 
-    private lateinit var binding: FragmentAddContactBinding
+    private var _binding: FragmentAddContactBinding? = null
+    private val binding: FragmentAddContactBinding
+        get() = requireNotNull(_binding)
 
     @Inject
     lateinit var presenterProvider: Provider<AddContactPresenter>
@@ -37,7 +39,7 @@ class AddContactFragment : MvpBottomSheetDialogFragment(), AddContactView {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAddContactBinding.inflate(inflater)
+        _binding = FragmentAddContactBinding.inflate(inflater)
 
         with(binding) {
             addContactPhoto.imageResource = R.drawable.ic_userpic_placeholder
@@ -75,6 +77,11 @@ class AddContactFragment : MvpBottomSheetDialogFragment(), AddContactView {
         }
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun validateToxIdAndSendRequest(toxId: String): Boolean {

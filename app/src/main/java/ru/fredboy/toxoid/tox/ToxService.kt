@@ -13,12 +13,15 @@ import javax.inject.Inject
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.fredboy.toxoid.clean.data.source.intent.*
 import ru.fredboy.toxoid.tox.api.ToxApiHandler
+import splitties.permissions.requestPermission
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 @AndroidEntryPoint
@@ -32,6 +35,8 @@ class ToxService : Service() {
 
     @Inject
     lateinit var toxApiHandler: ToxApiHandler
+
+    private val isStarted = AtomicBoolean(false)
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
@@ -112,6 +117,12 @@ class ToxService : Service() {
         CoroutineScope(Dispatchers.Main).launch {
             useCases.getSelfConnectionStatusFlow()
                 .collect { connection ->
+                    Toast.makeText(
+                        /* context = */ this@ToxService,
+                        /* text = */ "ConnectionStatus: ${connection.name}",
+                        /* duration = */ Toast.LENGTH_SHORT
+                    ).show()
+
                     val currentUserName = useCases.getCurrentUser()?.name.toString()
 
                     val notification: Notification = Notification

@@ -21,7 +21,9 @@ import javax.inject.Provider
 @AndroidEntryPoint
 class BootstrapFragment : BaseMvpFragment(), BootstrapView {
 
-    private lateinit var binding: FragmentBootstrapBinding
+    private var _binding: FragmentBootstrapBinding? = null
+    private val binding: FragmentBootstrapBinding
+        get() = requireNotNull(_binding)
 
     @Inject
     lateinit var presenterProvider: Provider<BootstrapPresenter>
@@ -34,7 +36,7 @@ class BootstrapFragment : BaseMvpFragment(), BootstrapView {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        binding = FragmentBootstrapBinding.inflate(inflater)
+        _binding = FragmentBootstrapBinding.inflate(inflater)
 
         with(binding) {
             bootstrapProgress.visible()
@@ -56,6 +58,11 @@ class BootstrapFragment : BaseMvpFragment(), BootstrapView {
         }
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun getSelectedIndices(): List<Int> {

@@ -16,7 +16,9 @@ import javax.inject.Provider
 @AndroidEntryPoint
 class WelcomeFragment : BaseMvpFragment(), WelcomeView {
 
-    private lateinit var binding: FragmentWelcomeBinding
+    private var _binding: FragmentWelcomeBinding? = null
+    private val binding: FragmentWelcomeBinding
+        get() = requireNotNull(_binding)
 
     @Inject
     lateinit var presenterProvider: Provider<WelcomePresenter>
@@ -28,7 +30,7 @@ class WelcomeFragment : BaseMvpFragment(), WelcomeView {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentWelcomeBinding.inflate(inflater)
+        _binding = FragmentWelcomeBinding.inflate(inflater)
 
         with(binding) {
             welcomeContinueButton.setOnClickListener {
@@ -38,6 +40,11 @@ class WelcomeFragment : BaseMvpFragment(), WelcomeView {
         }
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun finishActivity() {

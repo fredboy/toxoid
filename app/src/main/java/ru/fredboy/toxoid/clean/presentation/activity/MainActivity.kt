@@ -1,8 +1,11 @@
 package ru.fredboy.toxoid.clean.presentation.activity
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -24,6 +27,7 @@ import ru.fredboy.toxoid.clean.domain.usecase.user.GetAllUsersUseCase
 import ru.fredboy.toxoid.clean.domain.usecase.user.GetCurrentUserUseCase
 import ru.fredboy.toxoid.databinding.ActivityMainBinding
 import ru.fredboy.toxoid.utils.hexStringToByteArray
+import splitties.permissions.requestPermission
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -42,12 +46,15 @@ class MainActivity : AppCompatActivity() {
     lateinit var initToxServiceUseCase: InitToxServiceUseCase
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
+
+    private var _binding: ActivityMainBinding? = null
+    private val binding: ActivityMainBinding
+        get() = requireNotNull(_binding)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
@@ -66,12 +73,28 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (isFirstLaunchUseCase.execute()) {
-            val welcomeIntent = Intent(applicationContext, WelcomeActivity::class.java)
-            startActivity(welcomeIntent)
-        } else {
-            initToxServiceUseCase.execute()
+
+        lifecycleScope.launch {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermission(
+                    fragmentManager = supportFragmentManager,
+                    lifecycle = lifecycle,
+                    permission = Manifest.permission.POST_NOTIFICATIONS
+                )
+            }
+
+            if (isFirstLaunchUseCase.execute()) {
+                val welcomeIntent = Intent(applicationContext, WelcomeActivity::class.java)
+                startActivity(welcomeIntent)
+            } else {
+                initToxServiceUseCase.execute()
+            }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
     private fun setupSlider() {

@@ -23,6 +23,7 @@ import ru.fredboy.toxoid.utils.gone
 import ru.fredboy.toxoid.utils.setNavigationResult
 import ru.fredboy.toxoid.utils.visible
 import splitties.permissions.requestPermission
+import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -30,7 +31,9 @@ import javax.inject.Provider
 @AndroidEntryPoint
 class QrScanFragment : MvpAppCompatDialogFragment(), QrScanView {
 
-    private lateinit var binding: FragmentQrScanBinding
+    private var _binding: FragmentQrScanBinding? = null
+    private val binding: FragmentQrScanBinding
+        get() = requireNotNull(_binding)
 
     @Inject
     lateinit var presenterProvider: Provider<QrScanPresenter>
@@ -42,7 +45,7 @@ class QrScanFragment : MvpAppCompatDialogFragment(), QrScanView {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentQrScanBinding.inflate(inflater)
+        _binding = FragmentQrScanBinding.inflate(inflater)
 
         with(binding) {
             qrScanSettingsButton.setOnClickListener {
@@ -65,6 +68,11 @@ class QrScanFragment : MvpAppCompatDialogFragment(), QrScanView {
         requestCameraPermission()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun requestCameraPermission() {
         lifecycleScope.launchWhenResumed {
             val result = requestPermission(
@@ -82,7 +90,7 @@ class QrScanFragment : MvpAppCompatDialogFragment(), QrScanView {
         cameraSelector: CameraSelector,
         imageAnalyzer: ImageAnalysis.Analyzer
     ) {
-/*        binding.qrScanPermissionDeniedView.gone()
+        binding.qrScanPermissionDeniedView.gone()
 
         preview.setSurfaceProvider(binding.qrScanCameraPreview.surfaceProvider)
 
@@ -91,13 +99,13 @@ class QrScanFragment : MvpAppCompatDialogFragment(), QrScanView {
             .setTargetResolution(Size(1280, 720))
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
-            .apply { setAnalyzer(requireContext().mainExecutor, imageAnalyzer) }
+            .apply { setAnalyzer(Executors.newSingleThreadExecutor(), imageAnalyzer) }
 
         cameraProvider.bindToLifecycle(
-            *//* lifecycleOwner = *//* this as LifecycleOwner,
-            *//* cameraSelector = *//* cameraSelector,
-            *//* ...useCases = *//* imageAnalysis, preview
-        )*/
+            /* lifecycleOwner = */ this as LifecycleOwner,
+            /* cameraSelector = */ cameraSelector,
+            /* ...useCases = */ imageAnalysis, preview
+        )
     }
 
     override fun showPermissionDeniedView() {
@@ -105,7 +113,9 @@ class QrScanFragment : MvpAppCompatDialogFragment(), QrScanView {
     }
 
     override fun setToxIdAndClose(toxId: String) {
-        setNavigationResult(SCAN_RESULT_KEY, toxId)
+        requireActivity().runOnUiThread {
+            setNavigationResult(SCAN_RESULT_KEY, toxId)
+        }
     }
 
 

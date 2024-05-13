@@ -18,7 +18,9 @@ import javax.inject.Provider
 @AndroidEntryPoint
 class NewUserFragment : BaseMvpFragment(), NewUserView {
 
-    private lateinit var binding: FragmentNewUserBinding
+    private var _binding: FragmentNewUserBinding? = null
+    private val binding: FragmentNewUserBinding
+        get() = requireNotNull(_binding)
 
     @Inject
     lateinit var presenterProvider: Provider<NewUserPresenter>
@@ -30,7 +32,7 @@ class NewUserFragment : BaseMvpFragment(), NewUserView {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentNewUserBinding.inflate(inflater)
+        _binding = FragmentNewUserBinding.inflate(inflater)
 
         with(binding) {
             newUserProgress.visible()
@@ -46,6 +48,11 @@ class NewUserFragment : BaseMvpFragment(), NewUserView {
         presenter.initToxService()
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun setNewUser(user: LocalUser) {

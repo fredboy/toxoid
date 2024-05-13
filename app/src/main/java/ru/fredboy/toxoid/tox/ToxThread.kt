@@ -85,10 +85,9 @@ class ToxThread @Inject constructor(
             useCases.getIncomingMessageFlow().collect(useCases::saveMessage)
         }
 
-        val eventListener = object : ToxEventListenerImpl(useCases) { }
         while (!Thread.currentThread().isInterrupted) {
             Thread.sleep(toxCore.iterationInterval.toLong())
-            toxCore.iterate(eventListener, Any())
+            toxCore.iterate(ToxCoreCallbacks(useCases), Any())
         }
 
         Log.d(TAG, "dead")

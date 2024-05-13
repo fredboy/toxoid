@@ -1,27 +1,20 @@
 package ru.fredboy.toxoid.clean.presentation.view.chat
 
-import android.content.Context
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import ru.fredboy.toxoid.clean.presentation.model.MessageVo
 import ru.fredboy.toxoid.clean.presentation.view.base.BaseMvpFragment
 import ru.fredboy.toxoid.databinding.FragmentChatBinding
-import ru.fredboy.toxoid.databinding.FragmentChatListBinding
 import ru.fredboy.toxoid.utils.scrollToBottom
 import javax.inject.Inject
-import javax.inject.Provider
 
 @AndroidEntryPoint
 class ChatFragment : BaseMvpFragment(), ChatView {
@@ -29,7 +22,9 @@ class ChatFragment : BaseMvpFragment(), ChatView {
     @Inject
     lateinit var presenterFactory: ChatPresenter.Factory
 
-    private lateinit var binding: FragmentChatBinding
+    private var _binding: FragmentChatBinding? = null
+    private val binding: FragmentChatBinding
+        get() = requireNotNull(_binding)
 
     private val presenter: ChatPresenter by moxyPresenter { presenterFactory.get(args) }
 
@@ -43,7 +38,7 @@ class ChatFragment : BaseMvpFragment(), ChatView {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentChatBinding.inflate(inflater)
+        _binding = FragmentChatBinding.inflate(inflater)
 
         with(binding) {
             chatMessagesRecycler.adapter = fastAdapter
@@ -71,6 +66,11 @@ class ChatFragment : BaseMvpFragment(), ChatView {
         }
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun addMessages(messages: List<MessageVo>) {

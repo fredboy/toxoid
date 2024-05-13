@@ -28,7 +28,9 @@ class ChatListFragment : BaseMvpFragment(), ChatListView {
     @Inject
     lateinit var presenterProvider: Provider<ChatListPresenter>
 
-    private lateinit var binding: FragmentChatListBinding
+    private var _binding: FragmentChatListBinding? = null
+    private val binding: FragmentChatListBinding
+        get() = requireNotNull(_binding)
 
     private val presenter: ChatListPresenter by moxyPresenter { presenterProvider.get() }
 
@@ -40,7 +42,7 @@ class ChatListFragment : BaseMvpFragment(), ChatListView {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentChatListBinding.inflate(inflater)
+        _binding = FragmentChatListBinding.inflate(inflater)
 
         with(binding) {
             chatListRecycler.adapter = fastAdapter
@@ -58,6 +60,11 @@ class ChatListFragment : BaseMvpFragment(), ChatListView {
         }
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun showToast(text: String) {
